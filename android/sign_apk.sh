@@ -6,8 +6,20 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-INPUT_APK="${1:-${SCRIPT_DIR}/app/build/outputs/apk/release/app-release-unsigned.apk}"
+INPUT_APK="${1:-}"
 OUTPUT_APK="${2:-${ROOT_DIR}/SMO-Recomp-v0.1.0-android-arm64.apk}"
+
+if [ -z "${INPUT_APK}" ]; then
+    if [ -f "${SCRIPT_DIR}/app/build/outputs/apk/release/app-release.apk" ]; then
+        INPUT_APK="${SCRIPT_DIR}/app/build/outputs/apk/release/app-release.apk"
+    elif [ -f "${SCRIPT_DIR}/app/build/outputs/apk/release/app-release-unsigned.apk" ]; then
+        INPUT_APK="${SCRIPT_DIR}/app/build/outputs/apk/release/app-release-unsigned.apk"
+    elif [ -f "${ROOT_DIR}/android/app/build/outputs/apk/release/app-release.apk" ]; then
+        INPUT_APK="${ROOT_DIR}/android/app/build/outputs/apk/release/app-release.apk"
+    else
+        INPUT_APK="${ROOT_DIR}/android/app/build/outputs/apk/release/app-release-unsigned.apk"
+    fi
+fi
 
 KEYSTORE_DIR="${SCRIPT_DIR}/keystore"
 KEYSTORE_PATH="${KEYSTORE_DIR}/release.keystore"
