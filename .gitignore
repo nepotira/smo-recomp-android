@@ -1,0 +1,59 @@
+# Build and intermediate outputs
+build/
+bin/
+gen/
+out/
+*.o
+*.obj
+*.so
+*.dll
+*.exe
+*.a
+*.ninja
+.ninja_*
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Android Gradle build outputs
+android/.gradle/
+android/app/build/
+android/local.properties
+android/*.apk
+android/*.aab
+*.apk
+*.aab
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Game dumps, keys and decrypted assets (STRICTLY FORBIDDEN FROM VERSION CONTROL)
+*.nso
+*.nsp
+*.xci
+*.nro
+*.npdm
+*.nacp
+*.keys
+*.bntx
+*.szs
+*.sarc
+dump/
+romfs/
+manual/
+game_data/
+keys/
+
+# Editor and OS junk
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
