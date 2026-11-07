@@ -22,15 +22,15 @@ This directory contains instruction-level AOT patches applied by `lifter/recomp.
    ```
    By supplying the native aspect ratio ($2.2229508\text{f}$), `calcNearClipWidth` widens the camera frustum by $+25.04\%$ while keeping vertical height ($1.0\times$) unchanged. Mario, Cappy, and all circular objects retain perfect proportions with extra world geometry rendered on the sides.
 
-3. **2D Safe-Zone:**  
-   Orthographic 2D UI render passes (life counter, coins, moons) remain anchored in a centered 16:9 safe zone to prevent obstruction by the front camera punch-hole.
+3. **2D Safe-Zone Isolation (`patches/smo_safe_zone_2d.txt`):**  
+   Orthographic 2D UI render passes (life counter, coins, moons, action commands) remain anchored in a centered 16:9 safe zone ($2169 \times 1220$ on Poco F7 with $271.5\text{px}$ side margins) to prevent horizontal stretching and obstruction by the front camera punch-hole. Touch controls in `runtime/android/nnpad_android.c` automatically apply inward margin compensation on displays wider than 16:9.
 
 ---
 
 ## 2. Usage
 
-To apply the patch during the AOT transpilation step:
+To apply the patches during the AOT transpilation step:
 ```bash
-export RECOMP_PATCHES=patches/smo_aspect_ratio_20_9.txt
+export RECOMP_PATCHES="patches/smo_aspect_ratio_20_9.txt patches/smo_safe_zone_2d.txt"
 python lifter/recomp.py full games/smo/generated
 ```

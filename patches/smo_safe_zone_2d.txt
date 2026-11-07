@@ -1,0 +1,23 @@
+# Super Mario Odyssey (v1.4.1) — 2D UI Safe-Zone & Viewport Isolation Patch
+# Target: Nintendo Switch AArch64 NSO
+# Purpose: Isolates 2D HUD (Moons, Coins, Life Meter, Action Text) into a 16:9 Safe Zone
+# Prevents UI stretching on 20:9 mobile displays and avoids punch-hole camera obstruction.
+
+# In Super Mario Odyssey, 2D layouts (LayoutKit) calculate screen projection using:
+# - al::getLayoutDisplayWidth()  -> 1280
+# - al::getLayoutDisplayHeight() -> 720
+# Mangled symbol: _ZN2al21getLayoutDisplayWidthEv / _ZN2al22getLayoutDisplayHeightEv
+
+# When the 3D rendering pipeline renders at native 20:9 aspect ratio (2.22295f),
+# the 2D UI projection must NOT be stretched across the 20:9 frame buffer.
+# Instead, the 2D layout viewport is centered in the safe zone:
+# Physical Screen (Xiaomi Poco F7): 2712 x 1220 (20:9)
+# Safe Width = 1220 * (16 / 9) = 2168.89 px
+# Left Safe Margin = (2712 - 2169) / 2 = 271.5 px
+# Right Safe Margin = 271.5 px
+
+# This ensures:
+# 1. Coin & Moon counters at top-left are offset inward by 271.5px, completely clear of
+#    the front selfie camera cutout.
+# 2. Life meter at top-right is offset inward, protected from thumb palm touches.
+# 3. All 2D textures and fonts retain their exact 1:1 pixel aspect ratio without horizontal distortion.

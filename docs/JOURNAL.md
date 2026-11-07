@@ -70,3 +70,22 @@
 ### Evidência de Verificação:
 - Estrutura Gradle e arquivos Java/XML validados via Git.
 
+## 2026-11-07 — Sessão 6: Passo 6 - Safe-Zone 2D de Interface e Empacotamento do APK
+
+### Eventos e Ações:
+- Criado o patch de isolamento da interface 2D em `patches/smo_safe_zone_2d.txt`:
+  - Ancoragem dos elementos 2D (luas, moedas, medidor de vida, diálogos) na Safe-Zone centralizada em 16:9 ($2169 \times 1220$ com margens de $271.5\text{px}$ no display $2712 \times 1220$ do Poco F7).
+  - Evita deformações geométricas de ícones bidimensionais e impede que contadores fiquem sob o orifício da câmera frontal (*punch-hole*).
+- Atualizado `runtime/android/nnpad_android.c` com compensação automática de margens seguras para controles touch em telas ultra-wide (`aspect > 1.85f`), afastando os botões virtuais das bordas do chassi e do orifício da câmera.
+- Criado o script executável `android/sign_apk.sh` com:
+  - Geração automática de chaves RSA de 2048 bits se não existentes.
+  - Alinhamento de páginas ELF de 16 KB / 4 bytes via `zipalign -p -f 4` (mandatório para kernels Android 15+ de 16KB).
+  - Assinatura criptográfica com `apksigner` aplicando esquemas V1, V2 e V3.
+  - Verificação detalhada de integridade via `apksigner verify --verbose`.
+- Criada a ferramenta auxiliar `tools/sign_apk.py` para alinhamento via Python independente.
+- Configurado o pipeline de integração contínua do GitHub Actions em `.github/workflows/android.yml` compilando o APK via NDK r27b e gerando GitHub Releases com assets anexados.
+
+### Evidência de Verificação:
+- Scripts de assinatura, patch de Safe-Zone e workflow do GitHub Actions validados e commitados no Git.
+
+

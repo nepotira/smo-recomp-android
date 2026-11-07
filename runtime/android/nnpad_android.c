@@ -215,7 +215,27 @@ int android_touch_shapes(TouchShape *out, int max, float *opacity) {
     pthread_mutex_unlock(&g_lock);
     return n;
 }
-void android_touch_aspect(float aspect) { if (aspect > 0.2f) g_aspect = aspect; }
+void android_touch_aspect(float aspect) {
+    if (aspect > 0.2f) {
+        pthread_mutex_lock(&g_lock);
+        g_aspect = aspect;
+        /* Safe-Zone compensation for 20:9 ultra-wide displays (Poco F7, etc.):
+         * Keep touch buttons away from corner bezels and punch-hole camera cutouts */
+        if (aspect > 1.85f) {
+            float margin = (1.0f - (16.0f / 9.0f) / aspect) * 0.40f;
+            for (int i = 0; i < NBUTTONS; i++) {
+                if (k_buttons[i].x < 0.40f) {
+                    g_btn[i].x = k_buttons[i].x + margin;
+                } else if (k_buttons[i].x > 0.60f) {
+                    g_btn[i].x = k_buttons[i].x - margin;
+                }
+            }
+            g_stick[0][0] = k_stick[0][0] + margin;
+            g_stick[1][0] = k_stick[1][0] - margin;
+        }
+        pthread_mutex_unlock(&g_lock);
+    }
+}
 
 /* ---------------------------------------------------------------- controllers */
 static Ctl *ctl_for(int device, int64_t now) {      /* g_lock held */

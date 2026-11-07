@@ -25,5 +25,5 @@ Construção do zero absoluto do projeto de recompilação estática de *Super M
 | **Passo 3: Lifter AOT & Patch 20:9** | **Concluído** | Ferramental de elevação AOT configurado em `lifter/` e patch Hor+ 20:9 criado em `patches/smo_aspect_ratio_20_9.txt`. |
 | **Passo 4: Transpilação `smogame.so`** | **Concluído** | Script `build_gamelib.sh` criado, ponto de entrada dinâmico `gamelib_entry.c` e `games/smo/CMakeLists.txt` configurados para compilar `libsmogame.so` vinculada a `libmain.so`. |
 | **Passo 5: Projeto Android APK** | **Concluído** | Projeto Gradle NDK (`settings.gradle.kts`, `build.gradle.kts`, `app/build.gradle.kts`), `AndroidManifest.xml` imersivo de jogo, `LauncherActivity` para seleção de RomFS/driver/taxa de quadros, `GameActivity` (NativeActivity) com renderização total sem entalhes (SHORT_EDGES) e desativação de touch boost a 120Hz anti-aquecimento. |
-| **Passo 6: Safe-Zone 2D & Empacotamento** | Planejado | Próximo passo de execução. |
-| **Passo 7: Validação em Silício Poco F7** | Planejado | Teste em hardware real e publicação da Release v0.1.0. |
+| **Passo 6: Safe-Zone 2D & Empacotamento** | **Concluído** | Patch de Safe-Zone 2D em `patches/smo_safe_zone_2d.txt`, isolando o HUD em 16:9 centralizado; adaptação de margem de toque em `nnpad_android.c`; script de alinhamento 16KB e assinatura `android/sign_apk.sh`; ferramenta Python de fallback `tools/sign_apk.py`; workflow de CI GitHub Actions em `.github/workflows/android.yml`. |
+| **Passo 7: Validação em Silício Poco F7** | Planejado | Próximo passo de execução. |
