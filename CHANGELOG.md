@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-07
+
+### Added
+- Native library integration for arm64-v8a: packaged complete 71MB `libsmo.so` containing all 257 lifted game objects and `libadrenotools` hooks (`libfile_redirect_hook.so`, `libgsl_alloc_hook.so`, `libhook_impl.so`, `libmain_hook.so`) for Turnip 8xx custom driver support.
+- Upstream binary fetch step in GitHub Actions CI workflow to seamlessly pull compiled native assets during cloud builds without bloating git repository history.
+- Detailed missing game file diagnostics in `LauncherActivity`: explicit status indications (`missing: romfs`, `missing: npdm`, `missing: main.elf`) and dialog warnings replacing unhandled black screen deadlocks.
+- Established Comparative Audit Methodology in `docs/COMPARATIVE_AUDIT_METHODOLOGY.md` and updated `.agents/memory/LESSONS.md` to prevent architectural collisions between upstream base code and zero-scratch optimizations.
+
+### Changed
+- Aligned Android package identifier to `com.mobileodyssey.game` across manifest, Gradle build configurations, and Java source packages to seamlessly share and access existing on-device game installations without redundant file duplication.
+- Upgraded graphics defaults on fresh installs: Vulkan Mailbox presentation mode (`VK_PRESENT_MODE_MAILBOX_KHR`), CPU boost Always, Custom scale 100%, FXAA, and 75% sharpening.
+- Integrated Beta 0.2 Adreno fragmented GPU draw submissions (~14 submissions per frame in `nvn_vk_draw.c`) preventing GPU governor downclocking and sustaining higher clocks on Snapdragon 8s Gen 4 (SM8735 / Adreno 825).
+- Integrated stepped dynamic resolution limiter (`smo_quality.c`) and free frame pacing in 60 FPS mode (`display.c`).
+
+### Fixed
+- Fixed black screen deadlock on launch: prevented silent event loop idling in `android_main.c` and blocked invalid launch attempts when required game files are absent.
+
 ## [0.1.0] - 2026-11-07
 
 ### Added

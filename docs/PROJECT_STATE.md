@@ -3,8 +3,8 @@
 **Projeto:** Recompilação Estática e Runtime Móvel de Super Mario Odyssey para Android (SMO-Recomp-Android)  
 **Data de Atualização:** 2026-11-07  
 **Dispositivo Primário:** Xiaomi Poco F7 (Qualcomm Snapdragon 8s Gen 4 / GPU Adreno 825) — Android 17 / HyperOS 4  
-**Versão Atual:** v0.1.0 (Lançamento Inicial — Baseline Arquitetural Completo)  
-**Repositório:** `/home/nepo/Downloads/SWITCH/smo-recomp-android/` (branch `main`, tag `v0.1.0`)  
+**Versão Atual:** v0.2.0 (Resolução de Tela Escura, Package Coexistente e Otimizações Beta 0.2)  
+**Repositório:** `/home/nepo/Downloads/SWITCH/smo-recomp-android/` (branch `main`, tag `v0.2.0`)  
 
 ---
 

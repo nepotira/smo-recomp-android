@@ -5,7 +5,7 @@
  * so a place there is the same place in the game.
  * Leaving the game: askExit (the touch Exit button, the controller's Exit key) asks first, with the game held; Exit
  * waits for any save in progress, then ends this process (":game" in the manifest) and the app's menu comes back. */
-package com.nepo.smorecomp;
+package com.mobileodyssey.game;
 
 import android.app.Activity;
 import android.app.Dialog;

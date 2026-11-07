@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.mobileodyssey.game"
+    android:versionCode="11"
+    android:versionName="0.2.0">
 
     <uses-sdk android:minSdkVersion="30" android:targetSdkVersion="35" />
 
@@ -14,7 +17,7 @@
     <uses-feature android:name="android.hardware.audio.pro" android:required="false" />
 
     <application
-        android:label="SMO Recomp"
+        android:label="Odyssey"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:hasCode="true"
@@ -25,9 +28,12 @@
         android:largeHeap="true"
         android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
 
+        <!-- Simpleperf profiling hook -->
+        <profileable android:shell="true" />
+
         <!-- Launcher and Configuration Interface -->
         <activity
-            android:name=".LauncherActivity"
+            android:name="com.mobileodyssey.game.LauncherActivity"
             android:exported="true"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
             <intent-filter>
@@ -38,21 +44,21 @@
 
         <!-- Touch Controls Layout Editor -->
         <activity
-            android:name=".LayoutEditorActivity"
+            android:name="com.mobileodyssey.game.LayoutEditorActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation" />
 
-        <!-- Native Game Activity running libmain.so & smogame.so -->
+        <!-- Native Game Activity running libsmo.so -->
         <activity
-            android:name=".GameActivity"
+            android:name="com.mobileodyssey.game.GameActivity"
             android:process=":game"
-            android:exported="false"
+            android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="sensorLandscape"
             android:resizeableActivity="false"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation|uiMode|density">
-            <meta-data android:name="android.app.lib_name" android:value="main" />
+            <meta-data android:name="android.app.lib_name" android:value="smo" />
         </activity>
 
     </application>

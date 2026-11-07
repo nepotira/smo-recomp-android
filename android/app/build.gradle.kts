@@ -3,36 +3,24 @@ plugins {
 }
 
 android {
-    namespace = "com.nepo.smorecomp"
+    namespace = "com.mobileodyssey.game"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.nepo.smorecomp"
+        applicationId = "com.mobileodyssey.game"
         minSdk = 30
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 11
+        versionName = "0.2.0"
 
         ndk {
             abiFilters.add("arm64-v8a")
         }
-
-        externalNativeBuild {
-            cmake {
-                arguments(
-                    "-DANDROID_STL=c++_static",
-                    "-DANDROID_ARM_NEON=TRUE",
-                    "-DCMAKE_BUILD_TYPE=Release"
-                )
-                cFlags("-O3 -flto -march=armv8.2-a+simd")
-                cppFlags("-O3 -flto -march=armv8.2-a+simd -std=c++20")
-            }
-        }
     }
 
-    externalNativeBuild {
-        cmake {
-            path = file("../../CMakeLists.txt")
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDirs("src/main/jniLibs")
         }
     }
 
@@ -40,8 +28,11 @@ android {
         jniLibs {
             useLegacyPackaging = true
             pickFirsts.addAll(listOf(
-                "**/libmain.so",
-                "**/libsmogame.so"
+                "**/libsmo.so",
+                "**/libfile_redirect_hook.so",
+                "**/libgsl_alloc_hook.so",
+                "**/libhook_impl.so",
+                "**/libmain_hook.so"
             ))
         }
     }
