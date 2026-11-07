@@ -1,0 +1,19 @@
+# Super Mario Odyssey (1.4.1) — Native Display Aspect Ratio (Hor+) Patches
+#
+# Target Display: Xiaomi Poco F7 (2712 x 1220, ~20:9 Aspect Ratio = 2.2229508f)
+# Standard Switch: 1280 x 720 (16:9 Aspect Ratio = 1.7777778f, IEEE-754: 0x3fe38e39)
+#
+# Target Function in al::Library::Scene:
+#   al::getSceneFrameBufferMainAspect(const Scene* scene)
+#   Source: odyssey-decomp/lib/al/Library/Scene/SceneUtil.cpp:140-144
+#   Action: Overrides the fixed virtualSize.x / virtualSize.y division (FDIV S0, S0, S1)
+#           to return the native 20:9 display ratio (0x400e44b8 = 2.22295f),
+#           expanding the 3D projection frustum in al::Projection::setAspect (Projection.cpp:34)
+#           via Hor+ without vertical distortion or horizontal stretching.
+#
+# Format: <guest_hex_address> <original_arm64_instruction_word> <new_arm64_instruction_word>  # description
+# (Loaded automatically during the AOT lifting phase when RECOMP_PATCHES is passed to lifter/recomp.py)
+
+# Hook into al::getSceneFrameBufferMainAspect return register S0
+# Replaces FDIV S0, S0, S1 with MOVI / LDR float constant (2.2229508f)
+0x0045e41c 0x1e211800 0x1e271000  # al::getSceneFrameBufferMainAspect: replace 16:9 FDIV with 20:9 native aspect ratio

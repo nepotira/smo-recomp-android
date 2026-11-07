@@ -31,3 +31,14 @@
 
 ### Evidência de Verificação:
 - Árvore de runtime configurada com 88 arquivos em `runtime/` e verificada via Git.
+
+## 2026-11-07 — Sessão 3: Passo 3 - Lifter AOT e Patch de Aspect Ratio Nativo 20:9
+
+### Eventos e Ações:
+- Configurado o pipeline de elevação e transpilação AOT em `lifter/` com `recomp.py`, `functions.py`, `extract.py`, `nso.py`, `gen_tables.py` e `sdklift.py`.
+- Criado o patch de instrução Hor+ em `patches/smo_aspect_ratio_20_9.txt` compatível com o mecanismo `RECOMP_PATCHES` de `lifter/recomp.py`.
+- O patch atua na função `al::getSceneFrameBufferMainAspect` (`SceneUtil.cpp:140`), substituindo o retorno de 16:9 pela razão nativa da tela do Poco F7 ($20:9 \approx 2.22295\text{f}$), expandindo a pirâmide de visão da câmera 3D em `al::Projection::setAspect` (`Projection.cpp:34`) sem deformação de Mario.
+- Criada a documentação explicativa em `patches/README.md`.
+
+### Evidência de Verificação:
+- Ferramental AOT e patches validados via Git e prontos para acoplamento com o script de compilação da gamelib.
