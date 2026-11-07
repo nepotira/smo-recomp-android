@@ -23,7 +23,7 @@ Construção do zero absoluto do projeto de recompilação estática de *Super M
 | **Passo 1: Inicialização do Workspace** | **Concluído** | Repositório Git criado, `.gitignore`, documentação bilíngue e esqueleto de pastas. |
 | **Passo 2: Runtime Móvel (`libmain.so`)** | **Concluído** | Base Beta 0.2 importada, AAudio Exclusive Sink (~32ms), ARM NEON SIMD 128-bit unswizzler, pacing não-blocante e CMakeLists.txt configurado. |
 | **Passo 3: Lifter AOT & Patch 20:9** | **Concluído** | Ferramental de elevação AOT configurado em `lifter/` e patch Hor+ 20:9 criado em `patches/smo_aspect_ratio_20_9.txt`. |
-| **Passo 4: Transpilação `smogame.so`** | Planejado | Próximo passo de execução. |
-| **Passo 5: Projeto Android APK** | Planejado | Estrutura Gradle e SDL3 NativeActivity a ser criada. |
+| **Passo 4: Transpilação `smogame.so`** | **Concluído** | Script `build_gamelib.sh` criado, ponto de entrada dinâmico `gamelib_entry.c` e `games/smo/CMakeLists.txt` configurados para compilar `libsmogame.so` vinculada a `libmain.so`. |
+| **Passo 5: Projeto Android APK** | Planejado | Próximo passo de execução. |
 | **Passo 6: Safe-Zone 2D & Empacotamento** | Planejado | Ajuste ortográfico e empacotamento assinado. |
 | **Passo 7: Validação em Silício Poco F7** | Planejado | Teste em hardware real e publicação da Release v0.1.0. |

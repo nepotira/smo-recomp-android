@@ -42,3 +42,14 @@
 
 ### Evidência de Verificação:
 - Ferramental AOT e patches validados via Git e prontos para acoplamento com o script de compilação da gamelib.
+
+## 2026-11-07 — Sessão 4: Passo 4 - Pipeline da Gamelib e Compilação de smogame.so
+
+### Eventos e Ações:
+- Criado o script de orquestração `build_gamelib.sh` para extração de NSO, análise de funções via `.eh_frame`, elevação AOT com `patches/smo_aspect_ratio_20_9.txt` e compilação via NDK Clang.
+- Implementado o ponto de entrada dinâmico `games/smo/gamelib_entry.c` exportando `smogame_tables()`.
+- Criado `games/smo/CMakeLists.txt` compilando `libsmogame.so` com otimizações `-O3 -flto -march=armv8.2-a+simd` e importando a dependência dinâmica direta de `libmain.so`.
+- Atualizado o `CMakeLists.txt` raiz para gerenciar os subdiretórios `runtime` e `games/smo`.
+
+### Evidência de Verificação:
+- Estrutura de compilação e script de orquestração validados e commitados no Git.
