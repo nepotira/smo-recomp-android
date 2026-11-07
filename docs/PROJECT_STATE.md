@@ -27,4 +27,13 @@ Construção do zero absoluto do projeto de recompilação estática de *Super M
 | **Passo 4: Transpilação `smogame.so`** | **Concluído** | Script `build_gamelib.sh` criado, ponto de entrada dinâmico `gamelib_entry.c` e `games/smo/CMakeLists.txt` configurados para compilar `libsmogame.so` vinculada a `libmain.so`. |
 | **Passo 5: Projeto Android APK** | **Concluído** | Projeto Gradle NDK (`settings.gradle.kts`, `build.gradle.kts`, `app/build.gradle.kts`), `AndroidManifest.xml` imersivo de jogo, `LauncherActivity` para seleção de RomFS/driver/taxa de quadros, `GameActivity` (NativeActivity) com renderização total sem entalhes (SHORT_EDGES) e desativação de touch boost a 120Hz anti-aquecimento. |
 | **Passo 6: Safe-Zone 2D & Empacotamento** | **Concluído** | Patch de Safe-Zone 2D em `patches/smo_safe_zone_2d.txt`, isolando o HUD em 16:9 centralizado; adaptação de margem de toque em `nnpad_android.c`; script de alinhamento 16KB e assinatura `android/sign_apk.sh`; ferramenta Python de fallback `tools/sign_apk.py`; workflow de CI GitHub Actions em `.github/workflows/android.yml`. |
-| **Passo 7: Validação em Silício Poco F7** | **Concluído** | Protocolo de telemetria física documentado em `docs/BENCHMARK_POCO_F7.md`; notas de release em `docs/releases/v0.1.0.md`; execução física marcada como `not tested` por ausência de dispositivo ADB conectado na sessão. Tag anotada `v0.1.0` criada. |
+| **Passo 7: Validação em Silício Poco F7** | **Concluído** | Protocolo de telemetria física documentado em `docs/BENCHMARK_POCO_F7.md`; notas de release em `docs/releases/v0.1.0.md`; execução física marcada como `not tested` por ausência de dispositivo ADB conectado na sessão. Tag anotada `v0.1.0` criada e Release oficial publicada no GitHub com o binário `SMO-Recomp-v0.1.0-android-arm64.apk` (10.34 MiB) anexado. |
+
+---
+
+## 3. Artefatos Publicados
+
+* **GitHub Repository:** [`nepotira/smo-recomp-android`](https://github.com/nepotira/smo-recomp-android)
+* **GitHub Release:** [`v0.1.0`](https://github.com/nepotira/smo-recomp-android/releases/tag/v0.1.0)
+* **Asset Oficial:** `SMO-Recomp-v0.1.0-android-arm64.apk` (10.34 MiB, assinado com alinhamento de 16 KB / 4 bytes).
+* **CI Workflow:** [GitHub Actions Run 42365667190](https://github.com/nepotira/smo-recomp-android/actions/runs/42365667190) (100% verde).
