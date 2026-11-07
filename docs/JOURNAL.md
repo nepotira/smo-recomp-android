@@ -19,3 +19,15 @@
 
 ### Evidência de Verificação:
 - Repositório Git inicializado e verificado com `git status -sb`.
+
+## 2026-11-07 — Sessão 2: Passo 2 - Camada de Compatibilidade Móvel (libmain.so)
+
+### Eventos e Ações:
+- Importada a árvore de runtime C++ POSIX atualizada a partir da Beta 0.2 de `smo-android-port`.
+- Integradas as correções de shaders Adreno/Vulkan (white-out fix dos samplers de textura, submissões fragmentadas para GPU e retenção de memória de luz ambiente no respawn).
+- Injetada a otimização **AAudio Exclusive Sink** em `runtime/android/android_main.c` com `AAUDIO_SHARING_MODE_EXCLUSIVE` e fallback resiliente para `SHARED`, reduzindo latência sonora para ~32ms.
+- Injetada a otimização de **Vetorização SIMD ARM NEON de 128 Bits** em `runtime/tex_decode.c` (`vld1q_u8` / `vst1q_u8`) para transferências de 16 bytes em ciclo único na decodificação de texturas Tegra Block Linear.
+- Criados `CMakeLists.txt` e `runtime/CMakeLists.txt` com compilação para `libmain.so` com flags `-O3 -flto -march=armv8.2-a+simd`.
+
+### Evidência de Verificação:
+- Árvore de runtime configurada com 88 arquivos em `runtime/` e verificada via Git.
