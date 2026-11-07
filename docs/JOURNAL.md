@@ -99,11 +99,12 @@
 - Adicionada vinculação explícita de `nativewindow` em `runtime/CMakeLists.txt` para suprir o símbolo `ANativeWindow_setFrameRate`.
 - Criado `runtime/table_stubs.c` fornecendo definições fracas (`__attribute__((weak))`) para `fn_table`, `fn_table_count`, `dyn_syms`, `dyn_sym_count` e as funções de hook `__real_f_*`, garantindo linkagem segura da biblioteca base.
 - Atualizado `games/smo/gamelib_entry.c` com definições fracas de `g_smo_main_fn_addrs`, `g_smo_main_fn_ptrs` e `g_smo_main_fn_count`, permitindo a geração limpa de `libsmogame.so` antes do dump dos objetos de jogo.
-- Submetidos commits `2b33787`, `befe087` e `1c25040`, com tag anotada `v0.1.0` disparando novo workflow no GitHub Actions CI.
+- Submetidos commits `2b33787`, `befe087`, `1c25040` e `4f7751f` (adicionando permissão `permissions: contents: write` no workflow de CI para autorização de criação de releases com anexos).
+- Tag anotada `v0.1.0` atualizada e disparada no GitHub Actions CI (Run 42365667190).
 
 ### Evidência de Verificação:
-- Sintaxe e compilação de `libmain.so` validadas com sucesso no CI.
-- Workflow de compilação remota 42365420183 acompanhado via `gh run watch`.
+- Compilação C/C++ nativa de `libmain.so` e `libsmogame.so`, montagem do APK Release via Gradle e alinhamento/assinatura com `sign_apk.sh` concluídos com sucesso comprovado nos logs do runner.
+- Workflow final 42365667190 acompanhado até a publicação da Release oficial v0.1.0.
 
 
 ## 2026-11-07 — Sessão 7: Passo 7 - Validação e Benchmarking em Silício Poco F7 & Publicação v0.1.0
