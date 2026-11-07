@@ -139,3 +139,27 @@
 
 
 
+
+
+## 2026-11-07 — Sessão 10: Diagnóstico da Tela Escura, Alinhamento de Pacote, Release 0.2.0 e Matriz de Auditoria Comparativa
+
+### Eventos e Ações:
+- Investigada e diagnosticada no código-fonte a causa-raiz exata da tela escura ao iniciar o app:
+  1. *Scoped Storage / Divergência de ID de Pacote:* O app preexistente funcional no dispositivo do operador usava `com.mobileodyssey.game`, mantendo os arquivos extraídos em `/sdcard/Android/data/com.mobileodyssey.game/files`. O nosso APK compilou com `com.nepo.smorecomp`, acessando uma pasta privada vazia.
+  2. *Loop Silencioso no `android_main.c`:* A checagem `need_file()` falhou silenciosamente para `dump/base/elf/main.elf`, `sdk.elf`, `main.npdm` e `romfs`. Como consequência, a `game_thread` nunca foi despachada (`pthread_create`), deixando a aplicação presa em um loop infinito ocioso de eventos (`ALooper_pollOnce`) com tela preta contínua.
+  3. *Biblioteca Nativa Recompilada:* O jogo recompilado exige o binário com todas as funções C compiladas (`libsmo.so` de 71 MB), e o manifest apontava para `main` em vez de `smo`.
+- Soluções implementadas:
+  1. Alinhado o identificador do aplicativo para `com.mobileodyssey.game` em todo o projeto (`AndroidManifest.xml`, `build.gradle.kts` e pacote dos fontes Java), permitindo acesso instantâneo e reaproveitamento dos gigabytes já instalados no telefone sem duplicar dados.
+  2. Atualizado o `LauncherActivity` para verificar minuciosamente a presença física dos 4 arquivos requeridos e emitir alerta explicativo caso o usuário tente inicializar o jogo com arquivos ausentes, eliminando a tela preta silenciosa.
+  3. Integrado no workflow do GitHub Actions o fetch automático das bibliotecas nativas arm64-v8a (`libsmo.so` de 71 MB e os hooks do `libadrenotools`), mantendo o repositório git leve enquanto o APK final é montado com todos os símbolos compilados.
+- Auditoria minuciosa da nova versão comunitária 0.2.0 (Beta 0.2):
+  1. Submissões fragmentadas de GPU no Adreno (~14 batches menores em `nvn_vk_draw.c`) mantendo o clock em 310 MHz em vez de 231 MHz (ganho de 44 para 57-58 FPS no Snapdragon).
+  2. Limitador de escala dinâmica por degraus (`smo_quality.c`) evitando variações bruscas de resolução.
+  3. Pacing livre a 60 FPS (`display.c`) estabilizando 1% lows.
+  4. Padrões de nova instalação: Mailbox presentation, CPU Boost Always, Escala 100%, FXAA e Nitidez 75%.
+  5. Precisão matemática NoContraction (`power-moon-recomp`) em shaders de vértice/geometria contra Z-fighting e buracos na geometria.
+- Instituída formalmente a Matriz de Auditoria Comparativa de Código Upstream vs. Zero-Scratch em `docs/COMPARATIVE_AUDIT_METHODOLOGY.md` e registrada nova lição aprendida em `.agents/memory/LESSONS.md`.
+
+### Evidência de Verificação:
+- Extração e validação do binário nativo `libsmo.so` e hooks do `libadrenotools` com `readelf` e `nm -D`.
+- Validação estrutural do novo `AndroidManifest.xml` e compilação do Gradle preparada para a release v0.2.0.

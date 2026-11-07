@@ -9,7 +9,7 @@
  * hash. Formats: NSP (PFS0) with its ticket, XCI (the secure HFS0 partition). The keys are read, used and dropped;
  * nothing is kept or sent anywhere. No Android classes, so it can be run and checked on a PC (main()).
  * Android port (2026-11-02). */
-package com.nepo.smorecomp;
+package com.mobileodyssey.game;
 
 import java.io.File;
 import java.io.FileOutputStream;

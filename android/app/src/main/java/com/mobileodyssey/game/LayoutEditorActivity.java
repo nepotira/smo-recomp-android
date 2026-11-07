@@ -5,7 +5,7 @@
  * keeps them (runtime/android/nnpad_android.c, pos_<control> = x y size in config/controls.ini). Only controls the player
  * moved or resized get a line; Reset removes them all. The game reads the file again while it runs.
  * Android port (2026-11-03). */
-package com.nepo.smorecomp;
+package com.mobileodyssey.game;
 
 import android.app.Activity;
 import android.content.Context;

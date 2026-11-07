@@ -7,7 +7,7 @@
  * Game files are the player's own: unpacked from their NSP / XCI with their prod.keys (GameImporter.java), or copied
  * from a folder they choose (the layout tools/android/push_data.py makes).
  * Android port (2026-11-02). */
-package com.nepo.smorecomp;
+package com.mobileodyssey.game;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -138,7 +138,7 @@ public class LauncherActivity extends Activity {
         card.addView(text("Super Mario Odyssey", 20, TEXT, true));
         card.addView(text("Version 1.0.0 · recompiled for this phone", 13, DIM, false));
         card.addView(space(12));
-        card.addView(statusLine("Game files", have ? "installed" : "missing", have ? OK : WARN));
+        card.addView(statusLine("Game files", gameStatusText(), have ? OK : WARN));
         card.addView(statusLine("Graphics driver", driverStatus(), DIM));
         Ini g = new Ini(new File(config, "graphics.ini"));
         card.addView(statusLine("Frame rate", "30".equals(g.get("frame_rate", "60")) ? "30 fps (full game speed)" : "60 fps", DIM));
@@ -148,7 +148,19 @@ public class LauncherActivity extends Activity {
         Button play = button(have ? "▶  Play" : "Import game files first", have ? ACCENT : CARD2);
         play.setTextSize(18);
         play.setEnabled(have);
-        play.setOnClickListener(v -> startActivity(new Intent(this, GameActivity.class)));
+        play.setOnClickListener(v -> {
+            if (!gameInstalled()) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Game Files Missing")
+                        .setMessage("Game data files are missing from:\n\n"
+                                + (root != null ? root.getAbsolutePath() : "external storage")
+                                + "\n\nTo play, import your prod.keys and NSP/XCI below, or place the extracted romfs and dump/ folders into the game directory.")
+                        .setPositiveButton("OK", null)
+                        .show();
+                return;
+            }
+            startActivity(new Intent(this, GameActivity.class));
+        });
         card.addView(play, new LinearLayout.LayoutParams(-1, dp(56)));
         content.addView(card);
 
@@ -696,9 +708,25 @@ public class LauncherActivity extends Activity {
     /* ------------------------------------------------------------ state */
     File keysFile() { return new File(getFilesDir(), "prod.keys"); }       /* internal storage: this app only */
     boolean gameInstalled() {
-        File romfs = new File(root, "romfs"), npdm = new File(root, "dump/base/exefs/main.npdm");
+        File romfs = new File(root, "romfs");
+        File npdm = new File(root, "dump/base/exefs/main.npdm");
+        File elf = new File(root, "dump/base/elf/main.elf");
         String[] k = romfs.list();
-        return k != null && k.length > 0 && npdm.exists();
+        return k != null && k.length > 0 && npdm.exists() && elf.exists();
+    }
+    String gameStatusText() {
+        File romfs = new File(root, "romfs");
+        File npdm = new File(root, "dump/base/exefs/main.npdm");
+        File elf = new File(root, "dump/base/elf/main.elf");
+        String[] k = romfs.list();
+        boolean hasRomfs = k != null && k.length > 0;
+        if (hasRomfs && npdm.exists() && elf.exists()) return "installed";
+        if (!hasRomfs && !npdm.exists() && !elf.exists()) return "missing";
+        StringBuilder sb = new StringBuilder("missing:");
+        if (!hasRomfs) sb.append(" romfs");
+        if (!npdm.exists()) sb.append(" npdm");
+        if (!elf.exists()) sb.append(" main.elf");
+        return sb.toString();
     }
     String customDriverName() {
         File d = new File(root, "driver"), meta = new File(d, "meta.json");

@@ -7,7 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 INPUT_APK="${1:-}"
-OUTPUT_APK="${2:-${ROOT_DIR}/SMO-Recomp-v0.1.0-android-arm64.apk}"
+OUTPUT_APK="${2:-${ROOT_DIR}/SMO-Recomp-v0.2.0-android-arm64.apk}"
 
 if [ -z "${INPUT_APK}" ]; then
     if [ -f "${SCRIPT_DIR}/app/build/outputs/apk/release/app-release.apk" ]; then
