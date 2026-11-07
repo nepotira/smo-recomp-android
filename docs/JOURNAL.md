@@ -53,3 +53,20 @@
 
 ### Evidência de Verificação:
 - Estrutura de compilação e script de orquestração validados e commitados no Git.
+
+## 2026-11-07 — Sessão 5: Passo 5 - Estruturação do Projeto Android (APK Gradle / NativeActivity)
+
+### Eventos e Ações:
+- Configurado o projeto Android Gradle completo em `android/`:
+  - `android/settings.gradle.kts`: inclusão do módulo `:app`.
+  - `android/build.gradle.kts`: configuração de plugins Android Gradle (AGP).
+  - `android/app/build.gradle.kts`: alvo Android 15 (API 35), NDK arm64-v8a com `-O3 -flto -march=armv8.2-a+simd`, empacotamento legado de bibliotecas (`useLegacyPackaging = true` para suportar hooks de driver `libadrenotools`), e vínculo CMake apontando para o `CMakeLists.txt` raiz.
+  - `android/app/src/main/AndroidManifest.xml`: declarado Vulkan 1.3 obrigatório, gamepad/sensores opcionais, modo imersivo total (`sensorLandscape`, `isGame=true`, `largeHeap=true`), `LauncherActivity` como ponto de entrada e `GameActivity` (`NativeActivity`) carregando `libmain.so`.
+  - `android/app/src/main/java/com/nepo/smorecomp/LauncherActivity.java`: interface para seleção de diretório RomFS (via SAF), alternador do patch de aspect ratio nativo Hor+ 20:9, seletor de taxa de quadros (30 FPS vs 60 FPS), seletor do driver Turnip 8xx e botão de início.
+  - `android/app/src/main/java/com/nepo/smorecomp/GameActivity.java`: subclasse de `NativeActivity` com `LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES` para renderização sob o orifício da câmera (sem barras pretas laterais), e bloqueio de `setFrameRateBoostOnTouchEnabled(false)` (Android 15+) evitando que eventos de toque forcem a tela a 120Hz e causem superaquecimento desnecessário.
+  - Importados os ícones de aplicativo em `res/mipmap-*/` e configurados recursos de temas em `res/values/`.
+  - Criado o script executável `android/build_apk.sh` para acionamento direto do Gradle CLI.
+
+### Evidência de Verificação:
+- Estrutura Gradle e arquivos Java/XML validados via Git.
+
