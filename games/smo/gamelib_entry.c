@@ -17,9 +17,9 @@ typedef struct {
     const uint64_t *sdk_count;
 } SmoGameTables;
 
-extern const uint64_t g_smo_main_fn_addrs[];
-extern const uint64_t g_smo_main_fn_count;
-extern const void *g_smo_main_fn_ptrs[];
+__attribute__((weak)) const uint64_t g_smo_main_fn_addrs[1] = {0};
+__attribute__((weak)) const uint64_t g_smo_main_fn_count = 0;
+__attribute__((weak)) const void *g_smo_main_fn_ptrs[1] = {0};
 
 __attribute__((visibility("default")))
 const SmoGameTables *smogame_tables(void) {
