@@ -30,6 +30,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Install Host Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
+
       - name: Setup Android SDK Paths
         run: |
           echo "${ANDROID_HOME}/cmdline-tools/latest/bin" >> $GITHUB_PATH
@@ -38,7 +43,7 @@ jobs:
       - name: Accept Android Licenses and Install NDK
         run: |
           yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install "ndk;27.2.12479018" "cmake;3.28.0" "build-tools;35.0.0"
+          ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install "ndk;27.2.12479018" "build-tools;35.0.0"
 
       - name: Grant Execute Permissions
         run: |
