@@ -88,10 +88,24 @@
 ### Evidência de Verificação:
 - Scripts de assinatura, patch de Safe-Zone e workflow do GitHub Actions validados e commitados no Git.
 
+## 2026-11-07 — Sessão 8: Resolução de Dependência NDK e Dynamic Loader Shaderc
+
+### Eventos e Ações:
+- Identificada falha no GitHub Actions CI na compilação de `runtime/android/vk_shaderc_android.c` (`'shaderc/shaderc.h' file not found`).
+- Análise de causa-raiz no NDK r27: os cabeçalhos e bibliotecas estáticas de `shaderc` não são pré-construídos por padrão nas ferramentas do NDK.
+- Refatorado `runtime/android/vk_shaderc_android.c` para utilizar carregamento dinâmico resiliente com `dlopen` (`libshaderc.so`, `libshaderc_shared.so`, `libshaderc_combined.so`) e resolução dinâmica de símbolos (`dlsym`), espelhando a arquitetura desacoplada de `vk_shaderc_shim.c`.
+- Eliminadas quaisquer dependências de cabeçalhos externos no NDK, declarando structs e tipos opacos no padrão C17/POSIX.
+- Preservada a lógica completa de injeção de `no_contraction` (SPIR-V OpDecorate 42) para prevenção de anomalias no Z-Buffer em Adreno e Turnip.
+- Submetido commit `2b33787` e atualizada a tag anotada `v0.1.0` disparando novo workflow no GitHub Actions CI.
+
+### Evidência de Verificação:
+- Sintaxe validada localmente com sucesso via `gcc -c -Wall -Wextra`.
+- Workflow de compilação remota 42364823951 acompanhado via `gh run watch`.
+
+
 ## 2026-11-07 — Sessão 7: Passo 7 - Validação e Benchmarking em Silício Poco F7 & Publicação v0.1.0
 
 ### Eventos e Ações:
-- Criado o protocolo detalhado de validação e benchmarking para o hardware Poco F7 em `docs/BENCHMARK_POCO_F7.md`:
   - Instruções completas para instalação via USB (`adb install -r`) e envio de RomFS (`adb push`).
   - Metas de telemetria definidas: 60 FPS estáveis, 16.6ms de frame pacing plano, temperatura de SoC/bateria $\le 39^\circ\text{C}$, aspecto Hor+ 20:9 nativo e Safe-Zone 2D centralizada em 16:9.
   - Registro de honestidade técnica estrita: status físico marcado como `not tested` por ausência de dispositivo ADB conectado no computador de desenvolvimento durante a sessão.
