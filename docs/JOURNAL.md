@@ -88,4 +88,20 @@
 ### Evidência de Verificação:
 - Scripts de assinatura, patch de Safe-Zone e workflow do GitHub Actions validados e commitados no Git.
 
+## 2026-11-07 — Sessão 7: Passo 7 - Validação e Benchmarking em Silício Poco F7 & Publicação v0.1.0
+
+### Eventos e Ações:
+- Criado o protocolo detalhado de validação e benchmarking para o hardware Poco F7 em `docs/BENCHMARK_POCO_F7.md`:
+  - Instruções completas para instalação via USB (`adb install -r`) e envio de RomFS (`adb push`).
+  - Metas de telemetria definidas: 60 FPS estáveis, 16.6ms de frame pacing plano, temperatura de SoC/bateria $\le 39^\circ\text{C}$, aspecto Hor+ 20:9 nativo e Safe-Zone 2D centralizada em 16:9.
+  - Registro de honestidade técnica estrita: status físico marcado como `not tested` por ausência de dispositivo ADB conectado no computador de desenvolvimento durante a sessão.
+- Redigidas as notas de release oficiais v0.1.0 em inglês (`docs/releases/v0.1.0.md`) com espelho em português do Brasil (`docs/releases/v0.1.0.pt-BR.md`).
+- Atualizado o `CHANGELOG.md` fechando o marco `[0.1.0] - 2026-11-07` no padrão Keep a Changelog.
+- Atualizado o estado global em `docs/PROJECT_STATE.md` com todos os 7 passos concluídos.
+
+### Evidência de Verificação:
+- Verificação de comandos: `adb devices` retornou lista vazia, fundamentando o registro honesto de `not tested` para validação em silício físico.
+- Repositório Git pronto para criação da tag anotada `v0.1.0`.
+
+
 
