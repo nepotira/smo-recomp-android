@@ -67,6 +67,7 @@ add_library(main SHARED ${FILTERED_SOURCES})
 
 target_link_libraries(main PRIVATE
     android
+    nativewindow
     log
     aaudio
     mediandk
