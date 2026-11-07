@@ -34,7 +34,7 @@ Construção do zero absoluto do projeto de recompilação estática de *Super M
 ## 3. Artefatos Publicados
 
 * **GitHub Repository:** [`nepotira/smo-recomp-android`](https://github.com/nepotira/smo-recomp-android)
-* **GitHub Release:** [`v0.1.0`](https://github.com/nepotira/smo-recomp-android/releases/tag/v0.1.0)
-* **Asset Oficial:** `SMO-Recomp-v0.1.0-android-arm64.apk` (10.74 MiB, assinado com alinhamento de 16 KB / 4 bytes).
-* **CI Workflow:** [GitHub Actions Run 42372280956](https://github.com/nepotira/smo-recomp-android/actions/runs/42372280956) (100% verde).
-* **Melhorias da Sessão 9:** Ícone cósmico original do Mario Odyssey, resolução de crash inicial (`LauncherActivity` nativo em `Theme.DeviceDefault.NoActionBar`), importador integrado `GameImporter.java` (NSP, XCI e `prod.keys`), editor de layout touch (`LayoutEditorActivity`) e abas completas de configuração.
+* **GitHub Release:** [`v0.2.0`](https://github.com/nepotira/smo-recomp-android/releases/tag/v0.2.0) (e [`v0.1.0`](https://github.com/nepotira/smo-recomp-android/releases/tag/v0.1.0))
+* **Asset Oficial v0.2.0:** `SMO-Recomp-v0.2.0-android-arm64.apk` (33.42 MiB). Notas de release reescritas a partir do CHANGELOG.md; seção indevida "New Contributors" removida.
+* **Status da Investigação (Tela Preta na v0.2.0):** Em andamento sob a skill `diagnostico-por-evidencia`. Causa declarada na v0.1.0 refutada como insuficiente. Aguardando envio de logs via ADB pelo operador no Xiaomi Poco F7 antes de qualquer nova alteração de código.
+* **Riscos em Auditoria:** Conflito de assinatura caso o APK use o mesmo `applicationId` da referência funcional; risco de obra derivada na redistribuição pública de `libsmo.so` transpilada de jogo comercial. Auditoria completa em `docs/TROUBLESHOOTING.md`.

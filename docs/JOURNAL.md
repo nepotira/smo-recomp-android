@@ -163,3 +163,33 @@
 ### Evidência de Verificação:
 - Extração e validação do binário nativo `libsmo.so` e hooks do `libadrenotools` com `readelf` e `nm -D`.
 - Validação estrutural do novo `AndroidManifest.xml` e compilação do Gradle preparada para a release v0.2.0.
+
+
+## 2026-11-07T19:44:06-03:00 — Sessão 11: Correção de Notas de Release, Auditoria de Alegações e Preparação para Coleta de Logs ADB
+
+### Eventos e Ações:
+- Sanitização das notas de release no GitHub:
+  - Detectada a presença da seção "New Contributors" na release `v0.2.0`, causada pelo uso indevido de `--generate-notes` que listou o próprio criador do repositório (`@nepotira`).
+  - Efetuado backup do corpo antigo da release no histórico deste diário:
+    ```markdown
+    ## What's Changed
+    * fix(startup): align package name, resolve black screen deadlock and sync Beta 0.2 optimizations by @nepotira in https://github.com/nepotira/smo-recomp-android/pull/1
+
+    ## New Contributors
+    * @nepotira made their first contribution in https://github.com/nepotira/smo-recomp-android/pull/1
+
+    **Full Changelog**: https://github.com/nepotira/smo-recomp-android/compare/v0.1.0...v0.2.0
+    ```
+  - Reescritas as notas da release `v0.2.0` no GitHub a partir do `CHANGELOG.md` via `gh release edit v0.2.0 --notes-file /tmp/notas_v020.md`.
+  - Confirmada com `gh release view v0.2.0` a eliminação completa da seção indevida.
+  - Executado `git shortlog -sne` comprovando que 100% dos commits pertencem ao operador `nepotira`.
+- Auditoria crítica das próprias alegações anteriores:
+  - Documentado em `docs/TROUBLESHOOTING.md` o status real das alegações: a causa declarada da tela preta na v0.1.0 foi classificada como hipótese incompleta ou refutada diante da persistência do sintoma na v0.2.0 (tela preta com barras de sistema visíveis).
+  - Alerta de risco documentado: a troca do `applicationId` para `com.mobileodyssey.game` cria conflito de assinatura com a referência funcional e acarreta risco de exclusão permanente da pasta de dados existente caso o usuário tente desinstalar o app funcional.
+  - Alerta de licença documentado: a biblioteca `libsmo.so` contém código transpilado de obra protegida; não deve ser empacotada em releases públicas.
+- Conciliação da metodologia de auditoria comparativa:
+  - Criado `docs/COMPARATIVE_AUDIT.md` consolidando os vetores específicos do projeto (ABI da libsmo, pipeline Vulkan, scheduler Kryo Cortex-A720, Scoped Storage e Adreno 750 vs. 825).
+  - Atualizado `AGENTS.md` com Escopo de Domínio, Referência Funcional e link para a auditoria comparativa.
+- Triagem factual de tela preta:
+  - Suspensas todas as suposições e alterações de código até a obtenção dos logs físicos de execução via ADB.
+  - Preparado guia contextualizado de captura via terminal Linux no Poco F7.

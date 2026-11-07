@@ -8,6 +8,8 @@
 ## 1. Perfil do Projeto
 * **Nome do Projeto:** Recompilação Estática e Runtime Móvel de Alta Performance de Super Mario Odyssey para Android (SMO-Recomp-Android).
 * **Workspace Raiz:** `/home/nepo/Downloads/SWITCH/smo-recomp-android/`
+* **Escopo de Domínio:** este projeto É a recompilação estática e runtime nativo de Super Mario Odyssey para Android ARM64, e NÃO É emulação genérica de Switch 1/2 (Eden/Lichii) nem engine C++ descompilada de PC.
+* **Referência Funcional:** `Deez-coder/SMO-android-port` (tag `B0.2`, APK funcional `odyssey-0.2.apk`). Auditoria comparativa e vetores de conflito documentados em `docs/COMPARATIVE_AUDIT.md`.
 * **Alvo de Jogo:** *Super Mario Odyssey* (v1.4.1), 54.214 funções mapeadas via tabela de símbolos RTTI e `.eh_frame`.
 * **Arquitetura de Compilação:** Dual `.so` (`libmain.so` como runtime hospedeiro em `runtime/` + `smogame.so` gerado por AOT em `games/smo/`).
 * **Operador / Desenvolvedor:** Nepo (@nepotira).
