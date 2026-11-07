@@ -96,11 +96,14 @@
 - Refatorado `runtime/android/vk_shaderc_android.c` para utilizar carregamento dinâmico resiliente com `dlopen` (`libshaderc.so`, `libshaderc_shared.so`, `libshaderc_combined.so`) e resolução dinâmica de símbolos (`dlsym`), espelhando a arquitetura desacoplada de `vk_shaderc_shim.c`.
 - Eliminadas quaisquer dependências de cabeçalhos externos no NDK, declarando structs e tipos opacos no padrão C17/POSIX.
 - Preservada a lógica completa de injeção de `no_contraction` (SPIR-V OpDecorate 42) para prevenção de anomalias no Z-Buffer em Adreno e Turnip.
-- Submetido commit `2b33787` e atualizada a tag anotada `v0.1.0` disparando novo workflow no GitHub Actions CI.
+- Adicionada vinculação explícita de `nativewindow` em `runtime/CMakeLists.txt` para suprir o símbolo `ANativeWindow_setFrameRate`.
+- Criado `runtime/table_stubs.c` fornecendo definições fracas (`__attribute__((weak))`) para `fn_table`, `fn_table_count`, `dyn_syms`, `dyn_sym_count` e as funções de hook `__real_f_*`, garantindo linkagem segura da biblioteca base.
+- Atualizado `games/smo/gamelib_entry.c` com definições fracas de `g_smo_main_fn_addrs`, `g_smo_main_fn_ptrs` e `g_smo_main_fn_count`, permitindo a geração limpa de `libsmogame.so` antes do dump dos objetos de jogo.
+- Submetidos commits `2b33787`, `befe087` e `1c25040`, com tag anotada `v0.1.0` disparando novo workflow no GitHub Actions CI.
 
 ### Evidência de Verificação:
-- Sintaxe validada localmente com sucesso via `gcc -c -Wall -Wextra`.
-- Workflow de compilação remota 42364823951 acompanhado via `gh run watch`.
+- Sintaxe e compilação de `libmain.so` validadas com sucesso no CI.
+- Workflow de compilação remota 42365420183 acompanhado via `gh run watch`.
 
 
 ## 2026-11-07 — Sessão 7: Passo 7 - Validação e Benchmarking em Silício Poco F7 & Publicação v0.1.0
