@@ -20,6 +20,10 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/types.h>
+enum AThermalStatus;
+typedef enum AThermalStatus AThermalStatus;
+struct AThermalHeadroomThreshold;
+typedef struct AThermalHeadroomThreshold AThermalHeadroomThreshold;
 #include <android/thermal.h>
 #include "gfx_options.h"
 #include "plat.h"
