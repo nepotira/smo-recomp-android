@@ -83,7 +83,10 @@ static inline void plat_exit(int code) { ExitProcess((UINT)code); }
 #include <ctype.h>
 #include <limits.h>
 #include <sys/syscall.h>
-#define PLAT_MAX_PATH 1024
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+#define PLAT_MAX_PATH PATH_MAX
 #define PLAT_EXPORT __attribute__((visibility("default")))
 #define PLAT_IMPORT
 typedef union { int64_t QuadPart; struct { uint32_t LowPart; int32_t HighPart; }; } plat_li;   /* a 64-bit count */
