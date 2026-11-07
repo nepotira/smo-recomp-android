@@ -107,10 +107,26 @@
 - Workflow final 42365667190 acompanhado até a publicação da Release oficial v0.1.0.
 
 
+## 2026-11-07 — Sessão 9: Correção do Ícone, Causa-Raiz de Crash Instantâneo e Integração GameImporter
+
+### Eventos e Ações:
+- Relatado pelo usuário que o ícone do app mostrava o Egg Emulator e que o aplicativo fechava instantaneamente ao ser tocado no celular.
+- Auditoria do ícone: detectado resíduo de imagem em `ic_launcher_foreground.png`. Reexecutado o gerador paramétrico `make_icon.py` criando a identidade visual original celestial do projeto (planeta dourado/coral, atmosfera cósmica e estrelas brilhantes). Reconstruídos todos os assets mipmap (`mdpi` a `xxxhdpi`) adaptativos e legados.
+- Auditoria da causa-raiz do fechamento imediato: `LauncherActivity` estendia `AppCompatActivity` enquanto o manifesto declarava `@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen`. Essa divergência faz o AndroidX lançar `IllegalStateException` instantaneamente em `super.onCreate()` antes do desenho da interface.
+- Refatorado `LauncherActivity` para estender `android.app.Activity` nativo com tema `@android:style/Theme.DeviceDefault.NoActionBar`.
+- Integrada a camada nativa de importação `GameImporter.java` (descriptografia AES-CTR/XTS de containers NSP/XCI e extração direta de RomFS/ExeFS no celular a partir de `prod.keys`).
+- Adicionado o editor visual de controles touch `LayoutEditorActivity.java` e a interface completa com 5 abas (`Game`, `Graphics`, `Controls`, `Advanced`, `Mods`).
+- Commit `e065cb7` submetido, tag `v0.1.0` atualizada e disparada no GitHub Actions CI (Run 42372280956).
+
+### Evidência de Verificação:
+- Ícones reconstruídos e validados visualmente com Pillow.
+- Workflow 42372280956 acompanhado via `gh run watch`.
+
+
 ## 2026-11-07 — Sessão 7: Passo 7 - Validação e Benchmarking em Silício Poco F7 & Publicação v0.1.0
 
 ### Eventos e Ações:
-  - Instruções completas para instalação via USB (`adb install -r`) e envio de RomFS (`adb push`).
+- Instruções completas para instalação via USB (`adb install -r`) e envio de RomFS (`adb push`).
   - Metas de telemetria definidas: 60 FPS estáveis, 16.6ms de frame pacing plano, temperatura de SoC/bateria $\le 39^\circ\text{C}$, aspecto Hor+ 20:9 nativo e Safe-Zone 2D centralizada em 16:9.
   - Registro de honestidade técnica estrita: status físico marcado como `not tested` por ausência de dispositivo ADB conectado no computador de desenvolvimento durante a sessão.
 - Redigidas as notas de release oficiais v0.1.0 em inglês (`docs/releases/v0.1.0.md`) com espelho em português do Brasil (`docs/releases/v0.1.0.pt-BR.md`).
