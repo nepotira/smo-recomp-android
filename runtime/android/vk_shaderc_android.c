@@ -116,6 +116,7 @@ static plat_once g_once = PLAT_ONCE_INIT;
 
 static void init_once(void) {
     const char *libs[] = {
+        "libsmo.so",
         "libshaderc.so",
         "libshaderc_shared.so",
         "libshaderc_combined.so",

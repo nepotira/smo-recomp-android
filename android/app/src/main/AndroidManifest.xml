@@ -58,7 +58,7 @@
             android:screenOrientation="sensorLandscape"
             android:resizeableActivity="false"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation|uiMode|density">
-            <meta-data android:name="android.app.lib_name" android:value="smo" />
+            <meta-data android:name="android.app.lib_name" android:value="main" />
         </activity>
 
     </application>
