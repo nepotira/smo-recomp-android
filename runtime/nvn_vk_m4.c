@@ -1886,7 +1886,11 @@ static void prewarm_start(void) {
     int si_n = plat_cpu_count();
     g_pw_nthread = si_n - 2;
     if (g_pw_nthread < 1) g_pw_nthread = 1;
+#ifdef __ANDROID__
+    if (g_pw_nthread > 3) g_pw_nthread = 3;
+#else
     if (g_pw_nthread > 16) g_pw_nthread = 16;
+#endif
     if (getenv("SMO_VK_WORKERS") && atoi(getenv("SMO_VK_WORKERS")) > 0 && atoi(getenv("SMO_VK_WORKERS")) <= 16) g_pw_nthread = atoi(getenv("SMO_VK_WORKERS"));
     g_pw_gate = plat_event_create(1, 0);
     g_pw_left = g_pw_nthread;
