@@ -25,6 +25,22 @@ Coleta realizada diretamente em `/data/media/0/Android/data/com.nepo.smorecomp/f
 
 ---
 
+## Medição Grupo G-5 (Otimizações T-05 a T-08 Aplicadas em Silício Real)
+
+Coleta realizada em 2026-11-08 no Poco F7 (`com.nepo.smorecomp`, build `group/g5-performance`, SHA-256 `6dae44cf4d394e9e03fcd6755aed51053ffdc4864145921cc7c75758e12a2135`):
+
+| Métrica / Subsistema | Baseline G-1 | Medição Grupo G-5 | Evidência Física (`log.txt` G-5) |
+| :--- | :--- | :--- | :--- |
+| **Holds de Pipeline / Stalls Render Thread** | 379 holds (15.899,2 ms) | **0 holds (0,0 ms)** · **0% de travamento por shader** | `nvn_vk_m4: holds of the render thread at a draw: 0, 0 ms in all, longest 0.0 ms` |
+| **Shader Skip Assíncrono (`T-05`)** | 0 draws skipped (bloqueava thread) | **68 draws pulados de forma assíncrona** sem travamento | `nvn_vk_skip: shader_wait = skip (near a fight); draws left out because a stage or pipeline was not ready: 68 in 21 frames` |
+| **Contenção de Workers (`T-06`)** | 16 workers (starvation de Kryo) | **3 worker threads ativas** · 13.249 jobs concluídos limpos | `nvn_vk: 540 pipelines listed in ../cache/vk/pipes.bin; 3 worker threads` / `background jobs 13249 queued / 13249 done` |
+| **Compute Buffers GPU Waits (`T-08`)** | Bloqueios síncronos em fences | **0 esperas por fence (0,0 ms em 72.237 dispatches)** | `nvn_vk: compute at frame 6000: 72237 dispatches ... waits for the GPU before a copy-back: 0 (0.0 ms in all)` |
+| **FPS em Cutscene Cappy (3000..3300)** | 38.6 FPS | **47.1 FPS** (+8.5 FPS) · **36.7 FPS (1% low)** (+9.1 FPS) | `nvn_perf: frames 3000..3300 frame time ms: avg 21.22 median 20.80 p99 27.26 \| fps avg 47.1, 1% low 36.7` |
+| **FPS em Gameplay (5700..6000)** | ~50 FPS | **60.0 FPS cravados** · **52.2 FPS (1% low)** | `nvn_perf: frames 5700..6000 frame time ms: avg 16.66 min 13.00 median 16.66 max 20.41 \| fps avg 60.0, 1% low 52.2` |
+| **Tempo de GPU Real Adreno 825** | 4.18 ms | **0.22 a 0.72 ms/frame** (GPU completamente desafogada) | `nvn_vk_perf: wait for the GPU 0.22 ms` |
+
+---
+
 ## 1. Procedimento de Instalação e Execução
 
 ### Via Cabo USB (ADB):
