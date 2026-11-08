@@ -103,8 +103,8 @@ public class GameActivity extends NativeActivity {
                 if (loading == null || isFinishing()) return;
                 try { nativeLoadState(st); } catch (UnsatisfiedLinkError e) { ui.postDelayed(this, 100); return; }      /* the game's thread has not registered it yet */
                 long now = android.os.SystemClock.uptimeMillis();
-                if (st[0] > 0 && shownAt < 0) shownAt = now;
-                if (shownAt >= 0 && now - shownAt > 600) { hideLoading(); return; }     /* the game's own frames for a moment */
+                if (st[0] > 0 && (st[2] == 0 || st[3] != 0) && shownAt < 0) shownAt = now;
+                if (shownAt >= 0 && now - shownAt > 600) { hideLoading(); return; }     /* the game's own frames once initial shader queue finishes */
                 if (st[2] > 0 && st[3] == 0) {                 /* the pipelines made ahead: from the cache in seconds, from nothing on a first start */
                     bar.setIndeterminate(false);
                     bar.setMax((int)st[2]);

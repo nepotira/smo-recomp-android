@@ -1270,8 +1270,13 @@ static int64_t g_pw_t0, g_pw_t1;
 /* Android port, GameActivity's loading screen: the pipelines made ahead so far, of how many; 1 once they are all made */
 int nvn_vk_load_progress(long long *done, long long *total) {
     int n = g_pw_n, next = g_pw_next;
-    *total = n; *done = next < n ? next : n;
-    return g_pw_t0 != 0 && g_pw_left == 0;
+    if (n > 0) {
+        *total = n; *done = next < n ? next : n;
+        return g_pw_t0 != 0 && g_pw_left == 0;
+    }
+    int64_t q = g_jq_queued, d = g_jq_done;
+    *total = q; *done = d < q ? d : q;
+    return q > 0 && d >= q;
 }
 static char g_pcache_path[160];
 static VStage *pw_stage(int s, uint64_t vh) {      /* g_sh_lock held: a variant named by pipes.bin, from its record */
@@ -1774,7 +1779,7 @@ void nvn_vk_program_set(void *prog) {
          * 7,740 stages made by the workers instead of 3,872, callers of nvnProgramSetShaders held 17.5 s instead of 7.4 s
          * over the whole first run (a second run reads them from the cache). */
         static int on = -1;
-        if (on < 0) on = !(getenv("SMO_VK_FRAGONLY") && !atoi(getenv("SMO_VK_FRAGONLY")));
+        if (on < 0) { const char *e = getenv("SMO_VK_FRAGONLY"); on = e ? atoi(e) != 0 : 0; }
         if (on) { static const uint32_t zero[4]; if (holdlog_on()) { plat_mutex_lock(&g_sh_lock); ho_note(ssrc_hb(&s[1]), 0); plat_mutex_unlock(&g_sh_lock); } spawn_stage_fo(&s[1], zero); }
         return;
     }
@@ -1794,16 +1799,11 @@ void nvn_vk_program_set(void *prog) {
     nvn_setsh_part[6] += tk() - tb;
     if (holdlog_on()) for (int i = 0; i < 2; i++) if (has[i]) ho_note(hn[i], 0);
     job_push(j);
-    /* session 6: outside a fight (no compute dispatch in the last frame) the caller is also held while the container scan
-     * still has work: loading ends when everything the container holds is ready */
-    int fr = fight_recent();
-    /* session 7: in a fight the caller (the game's main thread) is not held at all: a draw that needs the program waits for it
-     * on the render thread, a program not drawn in this frame costs nothing */
     int hs = hold_scan();
-    if (!fr && (g_jq_queued - g_jq_done > g_pw_nthread || (hs && g_bq_queued > g_bq_done))) {
+    if (hs && g_bq_queued > g_bq_done) {
         int64_t t0 = tk();
         plat_li fq; ((fq).QuadPart = plat_qpf());
-        while ((g_jq_queued - g_jq_done > g_pw_nthread || (hs && g_bq_queued > g_bq_done)) && tk() - t0 < 30 * fq.QuadPart) WD_SLEEP(&g_sh_cv, &g_sh_lock, 100);
+        while (g_bq_queued > g_bq_done && tk() - t0 < 30 * fq.QuadPart) WD_SLEEP(&g_sh_cv, &g_sh_lock, 100);
         g_set_held++; g_set_held_tk += tk() - t0;
         nvn_setsh_part[7] += tk() - t0;
     }
