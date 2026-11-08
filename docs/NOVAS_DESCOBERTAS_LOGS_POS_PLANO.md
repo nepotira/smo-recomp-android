@@ -125,3 +125,44 @@
   - Quando a thread principal aguarda `wait-present` (`7,54 ms/frame`) e `wait-other` (`5,57 ms/frame`), a thread de áudio do jogo atrasa a entrega de blocos de 5 ms (gerando lacunas de amostras zeradas dentro do próprio buffer do jogo antes mesmo de chegar ao AAudio).
 * **Correção Pós-Plano:**
   - Investigar o bloqueio em `wait-present` e `wait-other` na sincronização de eventos/fences do `nvn_vk.c` e implementar preenchimento preditivo/interpolado no `smo_audio.c` quando um bloco de 5 ms vier zerado durante picos de frame-time.
+
+---
+
+## 9. Bloqueio das Threads de Carregamento (`FileLoadThread` / `WorldResourceLoader`) por `gl_barrier()` Síncrono a 60 Hz em `nvn_gl.c`
+* **Rótulo:** **COMPROVADO**
+* **Evidência Literal no `log.txt` (G-3 Run — `/tmp/smo_log_g3.txt`):**
+  ```text
+  nvn_setsh: frame 91, program object 6e943b30a0 (called from 4000aeb87c): 15.6 ms | barrier 15.6 | container 0.0 ...
+  nvn_setsh: frame 168, program object 6e945c52a0 (called from 4000aeb87c): 31.9 ms | barrier 31.9 | container 0.0 ...
+  nvn_setsh: frame 980, program object 6e97734bc0 (called from 400077ee34): 15.7 ms | barrier 15.7 | container 0.0 ...
+  nvn_setsh: frame 2633, program object 6e869de3a8 (called from 4000aeb87c): 16.4 ms | barrier 16.3 | container 0.0 ...
+  nvn_vk: first battle frame is frame 2679, 45.4 s after the first present; the loading screen before it lasted 15.1 s
+  ```
+* **Diagnóstico no Código (`runtime/nvn_gl.c:339, 4246, 4366, 4459, 4562`):**
+  - Enquanto a tela dos Joy-Cons (`frames 76..1252`) ou a barra de loading após clicar em `"Resume"` (`frames 1800..2679`) anima a 60 FPS, a Render Thread fica bloqueada ~13–15 ms por frame dentro de `display_pace()` com `g_async_pending > 0`.
+  - As funções `prog_set_shaders_()` (`nvn_gl.c:4246`), `tpool_register()` (`nvn_gl.c:4562`), `spool_register()` (`nvn_gl.c:4366`) e `tex_finalize()` (`nvn_gl.c:4459`) chamam `gl_barrier()` (`if (g_async_pending) gl_run(job_nop, NULL);`) **incondicionalmente**, mesmo quando:
+    1. O `Prog *p` é recém-inicializado (`!p` ou sem stages anteriores) e nenhum command buffer em voo pode referenciá-lo;
+    2. O `tpool_register` / `spool_register` está registrando em slot vazio (e já é protegido por `g_pool_lock`);
+    3. O `tex_finalize` está apenas limpando uma cópia temporária por valor de `NVNtexture` (`A0 != t->guest`, que o `agl::driver::NVNtexture_` cria e destrói a cada uma das 5.200 texturas carregadas!).
+  - Isso explica também a Descoberta #2 (`freeze.txt` com `WorldResourceLoader` parado em `nvnTexturePoolRegisterTexture` enquanto `Presentation Thread` está em `nvnQueuePresentTexture`) e o `wait-other 4.47 ms (2.4 calls/frame)`.
+* **Correção:**
+  - Em `prog_set_shaders_()`, só chamar `gl_barrier()` se o `Prog *p` já existia e já possuía algum stage configurado (`state != 0`).
+  - Em `tex_finalize()`, mover `gl_barrier()` para depois de `if (!t) return;` e `if (A0 != t->guest) { ... return; }`.
+  - Em `tpool_register()` e `spool_register()`, remover `gl_barrier()` desnecessário (pois `g_pool_lock` já serializa leituras/escritas dos descritores e `pool_ent_release` já adia a coleta via `g_unref` / `tex_reclaim`).
+
+---
+
+## 10. Tempestade de `53.235` Jobs de Shader, `>106.000` `fopen()` em FUSE (`variants_known`) e Contenção de `g_sh_lock` em `nvn_vk_m4.c`
+* **Rótulo:** **COMPROVADO**
+* **Evidência Literal no `log.txt` (G-3 Run — `/tmp/smo_log_g3.txt`):**
+  ```text
+  nvn_setsh: frame 937, program object 6e972af7a8 (called from 400077ee34): 16.0 ms | barrier 0.0 | ... | program_set 16.0 (hash + job copy 0.0, lock 16.0, HELD 0.0)
+  nvn_setsh: frame 1232, program object 6e98016550 (called from 400077ee34): 31.8 ms | barrier 3.7 | ... | program_set 28.2 (hash + job copy 0.0, lock 28.2, HELD 0.0)
+  nvn_vk_m4: workers: 39992 programs handed over, 14833 stages made by them, 0 pipelines made by them
+  nvn_vk_cscan: container scan on: 8 containers scanned (8 known), 13243 variations, 13243 handed to the workers (109626 KB of code copied), 6836 pairs found, 1274 ms of the guest threads' time; pipelines made for a container's pass signatures: 0
+  ```
+* **Diagnóstico no Código (`runtime/nvn_vk_m4.c:1403-1455, 1787-1802, 1869`):**
+  1. **`variants_known()` chamado 106.470 vezes via FUSE mesmo quando `how == 0` (`nvn_vk_m4.c:1445-1450`):** Em `job_prog()`, `variants_known(&j->src[0], hv)` e `variants_known(&j->src[1], fs->hb)` abrem arquivos `.var` via `fopen()` no Scoped Storage (`/storage/emulated/0/Android/data/...`) em **todas** as 53.235 execuções de `job_prog()`, mesmo quando `stage_ensure()` retorna `how == 0` (stage já carregado na tabela `g_vstage`!). Chamar `variants_known()` apenas quando `how == 1` elimina ~92.000 `fopen()` no FUSE durante a tela dos Joy-Cons e no fim da barra de loading do `"Resume"`.
+  2. **`spawn_stage()` redundante para stages já prontos (`nvn_vk_m4.c:1437`):** `job_prog()` chama `spawn_stage(&j->src[1], zero)` para cada um dos 39.992 programas sem checar se o fragment stage já está pronto em `g_vstage`, inflando a fila de foreground de 39.992 para 52.207 jobs e disputando `g_sh_lock`.
+  3. **`g_cscan` (Container Scan) ativo sem `cpredict` nem `GPL` no Android (`nvn_vk_m4.c:1869`):** No Android (`cpredict = 0`, `GPL = 0`), o `nvn_vk_cscan` consome `1.274 ms` das threads do jogo, copia `109,6 MB` de código e enfileira `13.243` variações que geram **0 pipelines** (`pipelines made for a container's pass signatures: 0`), mas criam milhares de `VkShaderModule`s órfãos na RAM (Descoberta #5).
+  4. **Contenção de CPU dos 6 workers (`pw_main`) sobre os cores `2, 3, 4` do jogo (`SMO_OS_CONSOLE_CORES`):** Como os 6 workers ainda rodam sem afinidade restrita (o que será corrigido na **`T-07`** do Grupo G-5, junto com a remoção do spin-wait `boost_main` na **`T-05`**), eles preemptam as threads do jogo nos cores 2, 3 e 4 por fatias inteiras do agendador Linux (~13–16 ms em `lock` e `hash + job copy`).
