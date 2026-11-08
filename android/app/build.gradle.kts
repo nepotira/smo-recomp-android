@@ -7,7 +7,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.mobileodyssey.game"
+        applicationId = "com.nepo.smorecomp"
         minSdk = 30
         targetSdk = 35
         versionCode = 11
