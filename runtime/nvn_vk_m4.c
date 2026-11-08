@@ -407,7 +407,7 @@ static VStage *stage_ensure(const SSrc *src, uint64_t hb, const uint32_t *key, u
  * default: the picture is wrong for the frames in which something is left out. */
 static int skip_on(void) { static int on = -1; if (on < 0) { const char *e = getenv("SMO_VK_NOHOLD"); on = e ? atoi(e) != 0 : gfx_options()->shader_skip; } return on; }
 static int fight_recent(void);
-static int skip_active(void) { return skip_on() && fight_recent(); }
+static int skip_active(void) { return skip_on(); }
 static int64_t g_skip_n, g_skip_frames, g_skip_fr_n, g_skip_stage, g_skip_pipe;
 static int g_skip_flag;                            /* set by vstage_get when it returned NULL because the stage is being made */
 static void skip_queue_stage(const SSrc *src, const uint32_t *key, uint32_t fo);
