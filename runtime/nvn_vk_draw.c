@@ -2268,6 +2268,7 @@ static void cb_poll(void) {                        /* pending CBs whose submissi
     if (R.done >= g_cb_serial) cb_land(0);
 }
 __attribute__((noinline)) static void cb_sync(void) {      /* guest memory must hold what compute wrote, now */
+    cb_poll();
     int mid = g_cb_live != 0;
     if (!g_cb_live && !g_cb_pending) return;
     if (g_cb_live) { g_cb_serial = cmd_submit(NULL, NULL); R.cb_syncs++; }

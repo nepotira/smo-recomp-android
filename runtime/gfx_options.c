@@ -168,7 +168,7 @@ static void opt_load(void) {
     memset(o, 0, sizeof *o);
     o->width = 1280; o->height = 720; o->scale = 0.0f; o->window_mode = 3; o->fps_counter = 1; o->dynres = 1; o->boost = 1; o->diag_off = 1;
 #ifdef __ANDROID__
-    o->present = 3; o->scale = 1.0f; o->boost = 2; o->fxaa = 1; o->sharpen = 0.75f;      /* as DEF_* above: a file without these keys */
+    o->present = 3; o->scale = 1.0f; o->boost = 2; o->fxaa = 1; o->sharpen = 0.75f; o->shader_skip = 1;      /* as DEF_* above: async shader skip on by default on Android */
 #endif
     opt_path(o->path);
     FILE *f = fopen(o->path, "rb");
