@@ -80,10 +80,17 @@ void *android_vulkan_loader(void) {
     snprintf(src, sizeof src, "%s/%s", pkg, lib);
     struct stat ss, ds;
     if (stat(src, &ss) != 0) return NULL;
-#ifndef SMO_ADRENOTOOLS
-    printf("nvn_vk: %s is there, but this build has no libadrenotools: the system's Vulkan driver\n", src);
-    return NULL;
-#else
+#if 1
+    typedef void *(*pfn_adrenotools_open_libvulkan)(int, int, const char *, const char *, const char *, const char *, const char *, void *);
+    void *smo_bridge_handle(void);
+    void *bh = smo_bridge_handle();
+    pfn_adrenotools_open_libvulkan fn_at_open = (pfn_adrenotools_open_libvulkan)(bh ? dlsym(bh, "adrenotools_open_libvulkan") : dlsym(RTLD_DEFAULT, "adrenotools_open_libvulkan"));
+    if (!fn_at_open) {
+        printf("nvn_vk: %s is there, but adrenotools_open_libvulkan symbol was not found: the system's Vulkan driver\n", src);
+        return NULL;
+    }
+    #define ADRENOTOOLS_DRIVER_CUSTOM 1
+    #define adrenotools_open_libvulkan fn_at_open
     const char *internal = android_internal_path();
     if (!internal) return NULL;
     snprintf(dir, sizeof dir, "%s/driver", internal);

@@ -415,7 +415,7 @@ void android_main(struct android_app *app) {
         if (f) fclose(f);
     }
     ANativeActivity_setWindowFlags(app->activity, AWINDOW_FLAG_FULLSCREEN | AWINDOW_FLAG_KEEP_SCREEN_ON, 0);
-    printf("smo: Android host, data folder %s\n", g_root);
+    printf("smo: [NEPO-RUNTIME-ACTIVE] Android host running compiled libmain.so, data folder %s\n", g_root);
     int ok = need_file("dump/base/elf/main.elf") & need_file("dump/base/elf/sdk.elf") & need_file("dump/base/exefs/main.npdm") & need_file("romfs");
     if (ok) {
         pthread_attr_t a;

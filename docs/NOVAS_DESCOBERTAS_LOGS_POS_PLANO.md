@@ -96,3 +96,32 @@
   - O arquivo `log.txt` chegou a `12.195.769 bytes` (~12,2 MB) devido à impressão repetitiva a cada mudança de frame de `smo_quality: render size asked 1600x900, the game's cap gives ...` e `nvn_vk_tex: frame ... contents carried over`.
 * **Correção Pós-Plano:**
   - Silenciar logs repetitivos por frame quando `diagnostics = off`, mantendo apenas os resumos a cada 300 frames (`nvn_perf`, `nvn_vk_perf`, `smo_audio`), eliminando I/O desnecessário em disco e no `logcat` durante o gameplay.
+
+---
+
+## 7. Buffer Overflow Detectado pelo Bionic `_FORTIFY_SOURCE=2` em `GfxOptions.path` (`gfx_options.h:5` / `gfx_options.c:162`) — **[JÁ CORRIGIDO NO T-03]**
+* **Rótulo:** **COMPROVADO E CORRIGIDO**
+* **Evidência Literal no `log.txt` (G-2 Run 2):**
+  ```text
+  FORTIFY: vsnprintf: prevented 4096-byte write into 404-byte buffer
+  HOST EXCEPTION SIGABRT at host address 0x7636d482c4
+    libc.so+0xbd238 __vsnprintf_chk
+    libmain.so+0xa1b90 gfx_options
+  ```
+* **Diagnóstico no Código (`runtime/gfx_options.h:5` e `runtime/gfx_options.c:162`):**
+  - `GfxOptions.path` foi declarado com tamanho de Windows (`char path[260]`, deixando a struct `GfxOptions` inteira com `404` bytes), enquanto `opt_path()` chamava `snprintf(out, PLAT_MAX_PATH, ...)` passando `PLAT_MAX_PATH = 4096` no Android. Com LTO (`-flto`) ativo no NDK 27, o `__vsnprintf_chk` do Bionic detectou escrita de 4096 bytes em struct de 404 bytes e abortou com `SIGABRT`.
+* **Status:** Corrigido imediatamente no `T-03` expandindo `char path[4096]` em `runtime/gfx_options.h` e alinhando `-D_FORTIFY_SOURCE=0` em `runtime/CMakeLists.txt`.
+
+---
+
+## 8. Trechos de Silêncio no Mixer do Jogo (`smo_audio: ... ms of silence in the game's sound`) e `wait-present 7.54 ms` / `wait-other 5.57 ms`
+* **Rótulo:** **COMPROVADO**
+* **Evidência Literal no `log.txt` (G-2 Run 4 — Frames 9000..9300):**
+  ```text
+  nvn_perf: ms/frame (calls/frame): ... wait-present 7.54 (1.0) wait-other 5.57 (2.0)
+  smo_audio: last 2 s: 260 ms of silence in the game's sound (5 ms stretches with nothing; a gap if music was playing)
+  ```
+* **Diagnóstico no Código (`runtime/smo_audio.c` e `runtime/nvn_vk.c`):**
+  - Quando a thread principal aguarda `wait-present` (`7,54 ms/frame`) e `wait-other` (`5,57 ms/frame`), a thread de áudio do jogo atrasa a entrega de blocos de 5 ms (gerando lacunas de amostras zeradas dentro do próprio buffer do jogo antes mesmo de chegar ao AAudio).
+* **Correção Pós-Plano:**
+  - Investigar o bloqueio em `wait-present` e `wait-other` na sincronização de eventos/fences do `nvn_vk.c` e implementar preenchimento preditivo/interpolado no `smo_audio.c` quando um bloco de 5 ms vier zerado durante picos de frame-time.

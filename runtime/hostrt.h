@@ -43,8 +43,15 @@ void *import_data(const char *name);
 /* Make an imported data symbol resolve to host memory (call before runtime_init). */
 void import_set_address(const char *name, void *addr);
 typedef struct { const char *name; const unsigned char *bytes; unsigned size; } SdkData;
+#ifdef SMO_BRIDGE_ENABLED
+extern const SdkData (*game_sdk_data_p)[];
+extern const int *game_sdk_data_count_p;
+#define sdk_data (*game_sdk_data_p)
+#define sdk_data_count (*game_sdk_data_count_p)
+#else
 extern const SdkData sdk_data[];
 extern const int sdk_data_count;
+#endif
 void register_imports(const ImportDef *defs, int count);
 ImportFn import_lookup(const char *name);    /* registered handler of an imported function, or NULL */
 ImportFn handler_by_name(const char *name);  /* the handler registered under a name, imported or not, or NULL */
