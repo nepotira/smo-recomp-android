@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Native CMake integration for `libmain.so` compiled directly from `runtime/` and bridged dynamically to `libsmo.so` via ARM64 trampolines and dlsym resolution.
 
 ### Changed
+- Enabled asynchronous shader skip across all scenes on Android (`skip_active` decoupled from `fight_recent`) with default `o->shader_skip = 1` in graphics options.
 - Restored standalone applicationId (com.nepo.smorecomp) and app label ("SMO Recomp") decoupled from the internal Java namespace (ADR-001).
 
 ### Fixed
