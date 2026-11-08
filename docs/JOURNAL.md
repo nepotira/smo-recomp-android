@@ -206,4 +206,5 @@
 - T-05: Desacoplado `skip_active()` de `fight_recent()` em `runtime/nvn_vk_m4.c` tornando o pulo assíncrono de shaders faltantes ativo em todas as cenas 3D no Android, e definido `o->shader_skip = 1` como padrão do Android em `runtime/gfx_options.c`.
 - T-06: Limitada a contagem de threads de compilação em segundo plano (`g_pw_nthread`) para no máximo 3 no Android em `runtime/nvn_vk_m4.c`, mitigando a contenção de mutexes e starvation dos núcleos de CPU Kryo.
 - T-07: Implementadas instruções nativas de hardware AArch64 (`frecpe` e `frsqrte`) via inline assembly em `runtime/fpexact.h` para aceleração direta de recíproca e raiz quadrada recíproca de ponto flutuante.
+- T-08: Inserida chamada não-bloqueante a `cb_poll()` no início de `cb_sync(void)` em `runtime/nvn_vk_draw.c`, colhendo buffers de computação já finalizados pela GPU e evitando esperas síncronas desnecessárias com `vkWaitForFences`.
 - Atualizado `CHANGELOG.md` na seção `[Unreleased]`.

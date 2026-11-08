@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hardware ARM64 `frecpe` and `frsqrte` inline assembly instructions in `runtime/fpexact.h` replacing scalar fallback loops.
 
 ### Changed
+- Polled completed GPU compute buffer slots via non-blocking `cb_poll()` at the start of `cb_sync(void)` in `runtime/nvn_vk_draw.c` to prevent redundant `vkWaitForFences` blocking stalls.
 - Capped background shader worker threads (`g_pw_nthread`) to at most 3 on Android in `runtime/nvn_vk_m4.c` to prevent thread contention against Kryo CPU cores.
 - Enabled asynchronous shader skip across all scenes on Android (`skip_active` decoupled from `fight_recent`) with default `o->shader_skip = 1` in graphics options.
 - Restored standalone applicationId (com.nepo.smorecomp) and app label ("SMO Recomp") decoupled from the internal Java namespace (ADR-001).
