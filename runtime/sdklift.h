@@ -16,12 +16,27 @@
 #define SDK_IMAGE_SIZE SDK_IMAGE_SIZE_GEN     /* SMO port: build/gen/image.h */
 
 typedef struct { uint64_t addr; void (*fn)(Ctx *); const char *name; } SdkFn;
+#ifdef SMO_BRIDGE_ENABLED
+extern const SdkFn (*game_sdk_fns_p)[];
+extern const int *game_sdk_fn_count_p;
+extern const char *const (*game_sdk_host_names_p)[];
+extern const int *game_sdk_host_name_count_p;
+extern const uint64_t (*game_sdk_ctors_p)[];
+extern const int *game_sdk_ctor_count_p;
+#define sdk_fns (*game_sdk_fns_p)
+#define sdk_fn_count (*game_sdk_fn_count_p)
+#define sdk_host_names (*game_sdk_host_names_p)
+#define sdk_host_name_count (*game_sdk_host_name_count_p)
+#define sdk_ctors (*game_sdk_ctors_p)
+#define sdk_ctor_count (*game_sdk_ctor_count_p)
+#else
 extern const SdkFn sdk_fns[];             /* sorted by address */
 extern const int sdk_fn_count;
 extern const char *const sdk_host_names[];
 extern const int sdk_host_name_count;
 extern const uint64_t sdk_ctors[];        /* SMO port: SDK static constructors to run before the game starts */
 extern const int sdk_ctor_count;
+#endif
 void sdk_run_ctors(Ctx *c);               /* runs them (boot.c, before nninitStartup) */
 
 int sdk_image_ready(void);                /* 1 once sdk.elf is mapped and relocated */

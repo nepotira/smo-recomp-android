@@ -41,6 +41,8 @@ set(EXCLUDE_SOURCES
     vk_shaderc_shim.c
     gamedll.c
     game_shim.c
+    sdkdata.c
+    sdklift_gen.c
     nvn_vk_draw.c      # Directly #included inside nvn_vk.c
     nvn_vk_store.c     # Directly #included inside nvn_vk.c
     nvn_vk_m4.c        # Directly #included inside nvn_vk.c
