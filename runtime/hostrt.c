@@ -224,11 +224,12 @@ void call_indirect(Ctx *c, uint64_t addr) {
         uint32_t key = (uint32_t)(addr - GUEST_BASE) + 1;
         uint64_t e = __atomic_load_n(&g_icache[k], __ATOMIC_RELAXED);
         void (*fn)(Ctx *);
-        if ((uint32_t)(e >> 32) == key) fn = (void (*)(Ctx *))(uintptr_t)((intptr_t)(uintptr_t)call_indirect + (int32_t)(uint32_t)e);
+        intptr_t base_anchor = (intptr_t)(uintptr_t)(fn_table_count > 0 ? fn_table[0].fn : (void (*)(Ctx *))call_indirect);
+        if ((uint32_t)(e >> 32) == key) fn = (void (*)(Ctx *))(uintptr_t)(base_anchor + (int32_t)(uint32_t)e);
         else {
             fn = lookup_guest(addr);
             if (!fn) guest_trap("indirect call to an address that is not a known function", addr);
-            intptr_t d = (intptr_t)(uintptr_t)fn - (intptr_t)(uintptr_t)call_indirect;
+            intptr_t d = (intptr_t)(uintptr_t)fn - base_anchor;
             if (d == (int32_t)d) __atomic_store_n(&g_icache[k], (uint64_t)key << 32 | (uint32_t)(int32_t)d, __ATOMIC_RELAXED);
         }
         fn(c);

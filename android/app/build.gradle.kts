@@ -16,6 +16,19 @@ android {
         ndk {
             abiFilters.add("arm64-v8a")
         }
+
+        externalNativeBuild {
+            cmake {
+                arguments("-DANDROID_STL=c++_shared")
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("../../runtime/CMakeLists.txt")
+            version = "3.22.1"
+        }
     }
 
     sourceSets {
@@ -28,6 +41,7 @@ android {
         jniLibs {
             useLegacyPackaging = true
             pickFirsts.addAll(listOf(
+                "**/libmain.so",
                 "**/libsmo.so",
                 "**/libfile_redirect_hook.so",
                 "**/libgsl_alloc_hook.so",
