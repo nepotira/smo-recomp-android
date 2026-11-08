@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Restored standalone applicationId (com.nepo.smorecomp) and app label ("SMO Recomp") decoupled from the internal Java namespace (ADR-001).
+
 ### Fixed
 - Disabled automatic generate_release_notes in GitHub Actions workflow to enforce CHANGELOG-based release notes.
 
