@@ -207,4 +207,5 @@
 - T-06: Limitada a contagem de threads de compilação em segundo plano (`g_pw_nthread`) para no máximo 3 no Android em `runtime/nvn_vk_m4.c`, mitigando a contenção de mutexes e starvation dos núcleos de CPU Kryo.
 - T-07: Implementadas instruções nativas de hardware AArch64 (`frecpe` e `frsqrte`) via inline assembly em `runtime/fpexact.h` para aceleração direta de recíproca e raiz quadrada recíproca de ponto flutuante.
 - T-08: Inserida chamada não-bloqueante a `cb_poll()` no início de `cb_sync(void)` em `runtime/nvn_vk_draw.c`, colhendo buffers de computação já finalizados pela GPU e evitando esperas síncronas desnecessárias com `vkWaitForFences`.
+- T-10: Implementada a chave dinâmica `Native Fullscreen Resolution` com expansão de câmera 3D Hor+ (`al::getSceneFrameBufferMainAspect` / `al::Projection::setAspect`) em `LauncherActivity`, `smo_quality.c` e `nvn_vk_draw.c`, permitindo preenchimento de 100% da tela do Poco F7 (20:9) sem letterboxing e sem esticar a geometria, além de corrigir o endereço canônico em `patches/smo_aspect_ratio_20_9.txt`.
 - Atualizado `CHANGELOG.md` na seção `[Unreleased]`.

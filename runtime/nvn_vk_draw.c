@@ -773,13 +773,26 @@ struct VTex {
  * of this runs: every branch is behind RS_ON or VTex.rs / R.pass_rs, which are then 0. */
 static float g_rs = -1.0f;
 static int64_t g_rs_images, g_rs_stages, g_rs_fcs, g_rs_tf, g_rs_up, g_rs_down, g_rs_blits;
+float nvn_vk_display_aspect(int *out_w, int *out_h) {
+    int w = (int)V.extent.width, h = (int)V.extent.height;
+    if (w <= 0 || h <= 0) { plat_window_size(NULL, &w, &h); }
+    if (w > 0 && h > 0 && w < h) { int t = w; w = h; h = t; }
+    if (out_w) *out_w = w > 0 ? w : 1920;
+    if (out_h) *out_h = h > 0 ? h : 1080;
+    return (w > 0 && h > 0) ? (float)w / (float)h : (16.0f / 9.0f);
+}
 static float rs_scale(void) {
     if (g_rs < 0) {
         const char *e = getenv("SMO_VK_SCALE");
         float v = e && atof(e) > 0 ? (float)atof(e) : gfx_options()->scale;
-        if (v <= 0) v = gfx_options()->handheld ? 1.0f : 1.2f;      /* Android port, resolution_scale = auto: docked 1920x1080 (SMO draws 1600x900), handheld 1280x720 */
+        if (gfx_options()->native_fullscreen && (!e || !e[0]) && v <= 0.0f) {
+            int dw = 0, dh = 0;
+            nvn_vk_display_aspect(&dw, &dh);
+            float base_h = gfx_options()->handheld ? 720.0f : 900.0f;
+            v = dh > 0 ? (float)dh / base_h : 1.2f;
+        } else if (v <= 0) v = gfx_options()->handheld ? 1.0f : 1.2f;
         if (v < 0.25f) v = 0.25f;
-        if (v > 2.0f) v = 2.0f;                    /* Android port: up to 2.0, drawing above the game's size as an emulator's resolution multiplier does */
+        if (v > 2.0f) v = 2.0f;
         g_rs = v;
     }
     return g_rs;
@@ -5458,10 +5471,12 @@ swap: ;
             b.srcOffsets[0].x = s4[0]; b.srcOffsets[0].y = s4[1]; b.srcOffsets[1].x = s4[0] + s4[2]; b.srcOffsets[1].y = s4[1] + s4[3]; b.srcOffsets[1].z = 1;
             b.dstOffsets[1].x = (int32_t)V.extent.width; b.dstOffsets[1].y = (int32_t)V.extent.height; b.dstOffsets[1].z = 1;
 #ifdef __ANDROID__
-            {   /* Android port: the picture keeps its shape (16:9) in a window of another one (a 20:9 phone): bars at the sides
-                 * or above and below, cleared black; the touch layer is told where the picture is */
+            {   /* Android port: when native_fullscreen is off, keep 16:9 with black bars; when native_fullscreen is on, fill 100% of the display (Hor+ camera handles aspect) */
                 int W = (int)V.extent.width, H = (int)V.extent.height, w = W, h = H;
-                if (s4[2] > 0 && s4[3] > 0) { if ((int64_t)W * s4[3] > (int64_t)H * s4[2]) w = (int)((int64_t)H * s4[2] / s4[3]); else h = (int)((int64_t)W * s4[3] / s4[2]); }
+                if (!gfx_options()->native_fullscreen && s4[2] > 0 && s4[3] > 0) {
+                    if ((int64_t)W * s4[3] > (int64_t)H * s4[2]) w = (int)((int64_t)H * s4[2] / s4[3]);
+                    else h = (int)((int64_t)W * s4[3] / s4[2]);
+                }
                 if (w != W || h != H) {
                     VkClearColorValue z; memset(&z, 0, sizeof z); z.float32[3] = 1.0f;
                     vkCmdClearColorImage(R.cmd, V.images[index], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &z, 1, &sr);

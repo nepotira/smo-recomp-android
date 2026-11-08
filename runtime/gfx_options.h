@@ -24,6 +24,7 @@ typedef struct {
     int fps30;               /* frame_rate = 30: 30 frames a second are drawn and the game's logic runs twice a frame (full speed, smo_framerate.c) */
     int diag_off;            /* diagnostics = off (default, 1; an old "auto" line counts as off) | on (ARM GPUs: nvn_vk_draw.c diag_present, eq_begin) */
     int boost;               /* boost = auto (default, 1) | on (2, always) | off (0): the frame's threads keep their CPUs' clocks up while frames are late (Android, android_perf.c) */
+    int native_fullscreen;   /* native_fullscreen = on (default on Android) | off: renders at the device's exact screen aspect ratio and native resolution without black bars or stretching */
 } GfxOptions;
 const GfxOptions *gfx_options(void);      /* any thread; read once (the file is written with defaults when it does not exist) */
 #endif
