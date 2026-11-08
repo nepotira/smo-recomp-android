@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Disabled automatic generate_release_notes in GitHub Actions workflow to enforce CHANGELOG-based release notes.
+- Eliminated 30-second main thread stalls in `nvnProgramSetShaders` and synchronized `GameActivity`'s "Preparing graphics..." loading overlay with worker shader completion.
 
 ## [0.2.0] - 2026-11-07
 
