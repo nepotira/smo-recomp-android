@@ -5125,7 +5125,10 @@ static int present_pass(uint32_t index, VTex *vt, const int *s4) {
     vkUpdateDescriptorSets(V.device, 2, w, 0, NULL);
     /* the picture's place in the window as the app sees it, keeping its shape */
     int BW = (int)V.extent.width, BH = (int)V.extent.height, LW = V.rot & 1 ? BH : BW, LH = V.rot & 1 ? BW : BH, pw = LW, ph = LH;
-    if (s4[2] > 0 && s4[3] > 0) { if ((int64_t)LW * s4[3] > (int64_t)LH * s4[2]) pw = (int)((int64_t)LH * s4[2] / s4[3]); else ph = (int)((int64_t)LW * s4[3] / s4[2]); }
+    if (!gfx_options()->native_fullscreen && s4[2] > 0 && s4[3] > 0) {
+        if ((int64_t)LW * s4[3] > (int64_t)LH * s4[2]) pw = (int)((int64_t)LH * s4[2] / s4[3]);
+        else ph = (int)((int64_t)LW * s4[3] / s4[2]);
+    }
     struct { float rect[4], crop[4], ext[2]; int32_t rot, pad; } pc;
     pc.rect[0] = (float)((LW - pw) / 2) / (float)LW; pc.rect[1] = (float)((LH - ph) / 2) / (float)LH; pc.rect[2] = (float)pw / (float)LW; pc.rect[3] = (float)ph / (float)LH;
     pc.crop[0] = (float)s4[0] / (float)vt->w; pc.crop[1] = (float)s4[1] / (float)vt->h; pc.crop[2] = (float)s4[2] / (float)vt->w; pc.crop[3] = (float)s4[3] / (float)vt->h;
