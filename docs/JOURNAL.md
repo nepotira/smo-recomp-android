@@ -198,4 +198,6 @@
 ### Eventos e Ações:
 - T-00: Criada tag de segurança `backup/pre-plan-2026-11-08` e desativado `generate_release_notes` no workflow `android.yml`.
 - T-01: Restaurado `applicationId = "com.nepo.smorecomp"` e `android:label = "SMO Recomp"` (Decisão D-1B) desacoplado do namespace Java e registrado `ADR-001-application-id.md`.
+- T-02: Coletada e registrada em `docs/BENCHMARK_POCO_F7.md` a Baseline Factual (Grupo G-1) no Xiaomi Poco F7 (`com.nepo.smorecomp` iniciado do zero com `prod.keys`, `.nsp` e driver Turnip customizado): `fps avg 50.4, 1% low 32.8`, `batch replay 3.69 ms`, `wait for GPU 0.09 ms`, `holds so far: 379 (15899.2 ms, longest 483.2 ms)`, `144 samples dropped (queue full)` e congelamento agudo de `5.1 s` em `freeze.txt`.
+- Criado `docs/NOVAS_DESCOBERTAS_LOGS_POS_PLANO.md` catalogando 6 novas descobertas técnicas reveladas pelos logs reais (`log.txt` e `freeze.txt`) para implementação pós-conclusão do plano atual.
 - Atualizado `CHANGELOG.md` na seção `[Unreleased]`.
