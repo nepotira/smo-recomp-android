@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Native CMake integration for `libmain.so` compiled directly from `runtime/` and bridged dynamically to `libsmo.so` via ARM64 trampolines and dlsym resolution.
+- Hardware ARM64 `frecpe` and `frsqrte` inline assembly instructions in `runtime/fpexact.h` replacing scalar fallback loops.
 
 ### Changed
 - Capped background shader worker threads (`g_pw_nthread`) to at most 3 on Android in `runtime/nvn_vk_m4.c` to prevent thread contention against Kryo CPU cores.

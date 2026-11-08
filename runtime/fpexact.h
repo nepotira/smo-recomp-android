@@ -79,10 +79,17 @@ static inline uint64_t fp_rsqrte_bits(uint64_t bits, int dbl) {
     return ((uint64_t)rexp << fbits) | (est << (fbits - 8));
 }
 
+#if defined(__aarch64__)
+static inline float recpe_f(float x) { float r; __asm__("frecpe %s0, %s1" : "=w"(r) : "w"(x)); return r; }
+static inline double recpe_d(double x) { double r; __asm__("frecpe %d0, %d1" : "=w"(r) : "w"(x)); return r; }
+static inline float rsqrte_f(float x) { float r; __asm__("frsqrte %s0, %s1" : "=w"(r) : "w"(x)); return r; }
+static inline double rsqrte_d(double x) { double r; __asm__("frsqrte %d0, %d1" : "=w"(r) : "w"(x)); return r; }
+#else
 static inline float recpe_f(float x) { uint32_t b; memcpy(&b, &x, 4); b = (uint32_t)fp_recpe_bits(b, 0); memcpy(&x, &b, 4); return x; }
 static inline double recpe_d(double x) { uint64_t b; memcpy(&b, &x, 8); b = fp_recpe_bits(b, 1); memcpy(&x, &b, 8); return x; }
 static inline float rsqrte_f(float x) { uint32_t b; memcpy(&b, &x, 4); b = (uint32_t)fp_rsqrte_bits(b, 0); memcpy(&x, &b, 4); return x; }
 static inline double rsqrte_d(double x) { uint64_t b; memcpy(&b, &x, 8); b = fp_rsqrte_bits(b, 1); memcpy(&x, &b, 8); return x; }
+#endif
 
 /* FCVT between half precision (IEEE binary16, FPCR.AHP = 0) and single / double: FPConvert of the Arm manual with
  * round-to-nearest-even and FPCR.DN = 0. A NaN keeps its sign and the top bits of its payload and becomes quiet
