@@ -196,8 +196,8 @@ static int g_wcur, g_wfill, g_wstarted;
  * dropped and counted, as the waveOut path drops when its 16 blocks are queued. The callback plays silence and counts
  * an underrun when the ring runs dry after playback started (60 ms are queued before it starts). */
 #define RING_FRAMES 32768
-#define RING_TARGET 5760
-#define RING_START 2880
+#define RING_TARGET 7680
+#define RING_START 3840
 static int16_t g_ring[RING_FRAMES * 2];
 static volatile uint64_t g_ring_w, g_ring_r;
 static volatile int g_ring_playing;

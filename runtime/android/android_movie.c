@@ -46,7 +46,7 @@ typedef struct {
     int cfmt, stride, slice, cl, ct, codec_eos, in_eos;
 } Track;
 
-#define QMAX 256                                      /* decoded samples queued per track */
+#define QMAX 1024                                     /* decoded samples queued per track (expanded to prevent cutscene audio/video desync) */
 typedef struct Ext {
     plat_mutex cs;
     AMediaExtractor *rd;                              /* non-NULL once a source is open (the Windows code tests rd) */
