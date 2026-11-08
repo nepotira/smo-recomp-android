@@ -166,3 +166,45 @@
   2. **`spawn_stage()` redundante para stages já prontos (`nvn_vk_m4.c:1437`):** `job_prog()` chama `spawn_stage(&j->src[1], zero)` para cada um dos 39.992 programas sem checar se o fragment stage já está pronto em `g_vstage`, inflando a fila de foreground de 39.992 para 52.207 jobs e disputando `g_sh_lock`.
   3. **`g_cscan` (Container Scan) ativo sem `cpredict` nem `GPL` no Android (`nvn_vk_m4.c:1869`):** No Android (`cpredict = 0`, `GPL = 0`), o `nvn_vk_cscan` consome `1.274 ms` das threads do jogo, copia `109,6 MB` de código e enfileira `13.243` variações que geram **0 pipelines** (`pipelines made for a container's pass signatures: 0`), mas criam milhares de `VkShaderModule`s órfãos na RAM (Descoberta #5).
   4. **Contenção de CPU dos 6 workers (`pw_main`) sobre os cores `2, 3, 4` do jogo (`SMO_OS_CONSOLE_CORES`):** Como os 6 workers ainda rodam sem afinidade restrita (o que será corrigido na **`T-07`** do Grupo G-5, junto com a remoção do spin-wait `boost_main` na **`T-05`**), eles preemptam as threads do jogo nos cores 2, 3 e 4 por fatias inteiras do agendador Linux (~13–16 ms em `lock` e `hash + job copy`).
+
+---
+
+## 11. Silêncios de `480..790 ms` a cada 2 s no Som do Próprio Jogo Durante Cutscenes 3D em Tempo Real (`frames 3112..8100` — Mario + Cappy)
+* **Rótulo:** **COMPROVADO**
+* **Evidência Literal no `log.txt` (G-4 Run — `/tmp/smo_log_g4_full.txt`, `frames 3112..9385`):**
+  ```text
+  301: audio: AAudio 48000 Hz 2 channels, burst 192 frames, buffer 1536 frames, started
+  925: smo_audio: last 2 s: 0 gaps (the device found the queue empty), 96 samples dropped (queue full), queue now 152 ms, slowest frame of sound 0.8 ms, 0 frames late
+  1049: smo_audio: last 2 s: 480 ms of silence in the game's sound (5 ms stretches with nothing; a gap if music was playing)
+  1051: smo_audio: last 2 s: 560 ms of silence in the game's sound (5 ms stretches with nothing; a gap if music was playing)
+  1056: nvn_perf: frames 4800..5100 frame time ms: avg 21.88 ... | fps avg 45.7, 1% low 35.7
+  1057: nvn_perf: ms/frame (calls/frame): ... wait-present 8.61 (1.0) wait-other 7.57 (2.0) pace 0.00 (0.0)
+  1066: smo_audio: last 2 s: 500 ms of silence in the game's sound (5 ms stretches with nothing; a gap if music was playing)
+  1067: smo_audio: last 2 s: 580 ms of silence in the game's sound (5 ms stretches with nothing; a gap if music was playing)
+  1068: nvn_perf: frames 5100..5400 frame time ms: avg 23.94 ... | fps avg 41.8, 1% low 36.2
+  1069: nvn_perf: ms/frame (calls/frame): ... wait-present 9.65 (1.0) wait-other 8.48 (2.0) pace 0.00 (0.0)
+  1125: nvn_perf: frames 6300..6600 frame time ms: avg 16.67 ... | fps avg 60.0, 1% low 52.9
+  1126: nvn_perf: ms/frame (calls/frame): ... wait-present 4.24 (1.0) wait-other 0.08 (2.0) pace 6.83 (1.0)
+  1204: smo_audio: last 2 s: 705 ms of silence in the game's sound (5 ms stretches with nothing; a gap if music was playing)
+  1205: smo_audio: last 2 s: 770 ms of silence in the game's sound (5 ms stretches with nothing; a gap if music was playing)
+  1206: nvn_perf: frames 7200..7500 frame time ms: avg 27.08 ... | fps avg 36.9, 1% low 32.6
+  1207: nvn_perf: ms/frame (calls/frame): ... wait-present 11.15 (1.0) wait-other 10.34 (2.0) pace 0.00 (0.0)
+  1231: smo_audio: last 2 s: 790 ms of silence in the game's sound (5 ms stretches with nothing; a gap if music was playing)
+  ```
+* **Diagnóstico no Código (`runtime/smo_audio.c`, `runtime/nvn_gl.c`, `runtime/android/android_perf.c`, `runtime/os_threads.c` e `runtime/smo_framerate.c`):**
+  1. **O AAudio e o Ring Buffer (`T-09`) NÃO tiveram nenhum underrun nem drop na cutscene:** A linha 925 comprova `0 gaps (the device found the queue empty)` e, do frame 3116 ao frame 9385, `ring_report` (`smo_audio.c:224`) não registrou nenhum gap nem amostra descartada no AAudio.
+  2. **A cutscene do Mario falando com o Cappy é 3D em tempo real na engine (`637..997 draws/frame`), NÃO um vídeo `.mp4`:** A proporção de silêncio gerada pelo próprio mixer do jogo (`g_silent_blocks` em `smo_audio.c:343`, que conta blocos de 240 amostras = 5 ms saídos de `CommandListProcessor::Process()` com pico `< 2`) obedece exatamente à lei matemática $\frac{\text{ms de silêncio}}{2000\text{ ms}} \approx 1 - \frac{\text{FPS}}{60,0}$:
+     - Em `60,0 FPS` (`frames 6300..6600` e `8400..8700`): **`0 ms` de silêncio (0%)**.
+     - Em `45,7 FPS` (`frames 4800..5100`): $1 - 45,7/60 = 23,8\%$ $\rightarrow$ **`480 ms` de silêncio / 2 s (24,0%)**.
+     - Em `41,8 FPS` (`frames 5100..5700`): $1 - 41,8/60 = 30,3\%$ $\rightarrow$ **`580 ms` de silêncio / 2 s (29,0%)**.
+     - Em `36,7 FPS` (`frames 7200..8100`): $1 - 36,7/60 = 38,8\%$ $\rightarrow$ **`775..790 ms` de silêncio / 2 s (38,8%..39,5%)**.
+  3. **Três causas combinadas no código explicam esse comportamento:**
+     - **Causa A — Spin-wait de 16 ms (`boost = on` em `gfx_options.c:21` + `BOOST_SPIN_NS = 16000000` em `android_perf.c:193-206` + `plat_spin_mark_hot()` em `nvn_gl.c:4904, 5049`) sobre os 3 cores fixos do console (`SMO_OS_CONSOLE_CORES` em `os_threads.c:234-272`):** Quando a main thread / present thread espera a `render_thread` em `wait-present` (`8,61..11,23 ms`) e `wait-other` (`7,57..10,40 ms`) dentro de `gl_run()` (`nvn_gl.c:300`), `plat_event_wait()` faz **busy-spin (`yield`) por até 16 ms seguidos** no próprio core do jogo (`cpu4`/`cpu3`/`cpu2`) em vez de dormir no kernel, impedindo as demais threads do jogo (`SoundThread`, `TaskThread`, workers de cena) fixadas no mesmo core de rodarem e derrubando o clock do cluster mid (`cpu5` cai para `480..1056 MHz`). Além disso, `SMO_PRESENT_ASYNC` está desligado por padrão (`nvn_gl.c:4910`), serializando a thread do jogo com a `render_thread`.
+     - **Causa B — Clock de áudio fixo em 200 Hz (`smo_audio.c:109-145`) vs. lógica do jogo atrelada ao frame (`frame_rate = 60` em `smo_framerate.c:20-27`):** Abaixo de 60 FPS (ex.: 37–45 FPS na cutscene), o jogo avança `procCalc_` e alimenta buffers de voz/stream da `nn::atk` na razão $\text{FPS}/60$, mas `frame_thread` continua cobrando `AudioRenderSystem::SendCommandToDsp` a 200 Hz fixos (a cada 5,000 ms), esgotando os buffers de 5 ms na fração $1 - \text{FPS}/60$.
+     - **Causa C — Ausência de retenção/interpolação de pacote (Zero-Order Hold / crossfade) ou cadência adaptativa em `audio_sink_out` (`smo_audio.c:331-359`) e `AAudioStreamBuilder_setBufferCapacityInFrames` (`android_main.c:280`):** Quando um tick de 5 ms do `CommandListProcessor` sai zerado (`g_blk_peak < 2`) por atraso de atualização da `SoundThread`, `audio_sink_out` escreve 240 amostras de zeros puros no meio da onda sonora (gerando o efeito de som "metralhado"/picotado na fala do Cappy).
+* **Correções Pós-Plano (complementares à `T-05` do Grupo G-5):**
+  1. Na **`T-05` (Grupo G-5, já no plano atual!)**, `plat_spinhot_set_ns(0)` e a desativação do spin-wait de 16 ms em `android_perf.c` já vão eliminar o bloqueio por spin nos cores do jogo (`cpu2, cpu3, cpu4`).
+  2. No Pós-Plano:
+     - Habilitar `SMO_PRESENT_ASYNC=1` por padrão no Android (`nvn_gl.c:4910`) para sobrepor o frame $N+1$ da CPU ao replay Vulkan do frame $N$ na `render_thread` (eliminando os `8,6..11,2 ms` de `wait-present`);
+     - Sincronizar/adaptar a cadência do `frame_thread` (`smo_audio.c:130`) ou aplicar interpolação/repetição suave de janela (packet loss concealment / crossfade de 240 amostras em `audio_sink_out`) quando um bloco de 5 ms vier zerado durante quedas abaixo de 60 FPS;
+     - Adicionar `AAudioStreamBuilder_setBufferCapacityInFrames(b, 3840)` antes de `AAudioStreamBuilder_openStream` em `android_main.c:285` para que `AAudioStream_setBufferSizeInFrames(g_stream, 1920)` não seja limitado em `1536` frames pelo driver AAudio em modo exclusivo.
