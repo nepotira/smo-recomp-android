@@ -197,4 +197,5 @@
 ## 2026-11-08 — Sessão 12: Execução do Plano de Correções — T-00
 ### Eventos e Ações:
 - T-00: Criada tag de segurança `backup/pre-plan-2026-11-08` e desativado `generate_release_notes` no workflow `android.yml`.
+- T-01: Restaurado `applicationId = "com.nepo.smorecomp"` e `android:label = "SMO Recomp"` (Decisão D-1B) desacoplado do namespace Java e registrado `ADR-001-application-id.md`.
 - Atualizado `CHANGELOG.md` na seção `[Unreleased]`.
