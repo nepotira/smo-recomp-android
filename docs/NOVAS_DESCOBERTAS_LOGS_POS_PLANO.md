@@ -96,3 +96,18 @@
   - O arquivo `log.txt` chegou a `12.195.769 bytes` (~12,2 MB) devido à impressão repetitiva a cada mudança de frame de `smo_quality: render size asked 1600x900, the game's cap gives ...` e `nvn_vk_tex: frame ... contents carried over`.
 * **Correção Pós-Plano:**
   - Silenciar logs repetitivos por frame quando `diagnostics = off`, mantendo apenas os resumos a cada 300 frames (`nvn_perf`, `nvn_vk_perf`, `smo_audio`), eliminando I/O desnecessário em disco e no `logcat` durante o gameplay.
+
+---
+
+## 7. Buffer Overflow Detectado pelo Bionic `_FORTIFY_SOURCE=2` em `GfxOptions.path` (`gfx_options.h:5` / `gfx_options.c:162`) — **[JÁ CORRIGIDO NO T-03]**
+* **Rótulo:** **COMPROVADO E CORRIGIDO**
+* **Evidência Literal no `log.txt` (G-2 Run 2):**
+  ```text
+  FORTIFY: vsnprintf: prevented 4096-byte write into 404-byte buffer
+  HOST EXCEPTION SIGABRT at host address 0x7636d482c4
+    libc.so+0xbd238 __vsnprintf_chk
+    libmain.so+0xa1b90 gfx_options
+  ```
+* **Diagnóstico no Código (`runtime/gfx_options.h:5` e `runtime/gfx_options.c:162`):**
+  - `GfxOptions.path` foi declarado com tamanho de Windows (`char path[260]`, deixando a struct `GfxOptions` inteira com `404` bytes), enquanto `opt_path()` chamava `snprintf(out, PLAT_MAX_PATH, ...)` passando `PLAT_MAX_PATH = 4096` no Android. Com LTO (`-flto`) ativo no NDK 27, o `__vsnprintf_chk` do Bionic detectou escrita de 4096 bytes em struct de 404 bytes e abortou com `SIGABRT`.
+* **Status:** Corrigido imediatamente no `T-03` expandindo `char path[4096]` em `runtime/gfx_options.h` e alinhando `-D_FORTIFY_SOURCE=0` em `runtime/CMakeLists.txt`.

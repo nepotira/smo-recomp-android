@@ -13,6 +13,8 @@ add_compile_options(
     -w
     -fno-strict-aliasing
     -D_GNU_SOURCE
+    -U_FORTIFY_SOURCE
+    -D_FORTIFY_SOURCE=0
     -DSMO_LAYOUT=android
     -D__ANDROID__
     -DSMO_BRIDGE_ENABLED

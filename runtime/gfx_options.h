@@ -2,7 +2,7 @@
 #ifndef GFX_OPTIONS_H
 #define GFX_OPTIONS_H
 typedef struct {
-    char path[260];
+    char path[4096];
     int renderer;            /* 0 Vulkan (default), 1 OpenGL                               env SMO_RENDERER=vk|gl wins */
     int window_mode;         /* 0 windowed, 1 borderless fullscreen (desktop size), 2 fullscreen (borderless, topmost, covering the
                               * monitor), 3 borderless window (the default: no frame, width x height, centred) */
