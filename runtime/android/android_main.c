@@ -290,7 +290,9 @@ static int audio_start(int rate) {
     }
     AAudioStreamBuilder_delete(b);
     if (r != AAUDIO_OK) { printf("audio: AAudio stream not opened (%s)\n", AAudio_convertResultToText(r)); return 0; }
-    AAudioStream_setBufferSizeInFrames(g_stream, AAudioStream_getFramesPerBurst(g_stream) * 2);
+    int32_t burst = AAudioStream_getFramesPerBurst(g_stream);
+    int32_t target_frames = burst * 4 < 1920 ? 1920 : burst * 4;
+    AAudioStream_setBufferSizeInFrames(g_stream, target_frames);
     r = AAudioStream_requestStart(g_stream);
     printf("audio: AAudio %d Hz %d channels, burst %d frames, buffer %d frames, %s\n", AAudioStream_getSampleRate(g_stream), g_channels,
            AAudioStream_getFramesPerBurst(g_stream), AAudioStream_getBufferSizeInFrames(g_stream), r == AAUDIO_OK ? "started" : "NOT started");
