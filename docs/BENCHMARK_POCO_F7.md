@@ -5,7 +5,23 @@
 **Display:** AMOLED 1.5K ($2712 \times 1220$ pixels, proporção nativa $\approx 20:9$ / $2.22295\text{f}$)  
 **SO:** Android 17 / HyperOS 4 sobre Kernel Linux AArch64 (páginas de 16 KB)  
 **Driver Gráfico:** Mesa Turnip Custom Adreno 8xx via AdrenoTools Hook  
-**Estado Físico da Sessão:** `not tested` (Dispositivo não conectado via ADB durante a execução; procedimentos de validação detalhados abaixo).
+**Estado Físico da Sessão:** **COMPROVADO EM HARDWARE REAL** (Xiaomi Poco F7 — `com.nepo.smorecomp`, coleta em 2026-11-08 via `log.txt` e `freeze.txt`).
+
+---
+
+## Baseline Factual (Grupo G-1 — Antes das Otimizações de Runtime)
+
+Coleta realizada diretamente em `/data/media/0/Android/data/com.nepo.smorecomp/files/log.txt` (12.26 MB) e `freeze.txt` (1.76 KB) no APK do **Grupo G-0** (`com.nepo.smorecomp`, SHA-256 `3080fb28b8a547c74eb16d3ebd1e11f9a2454e30c53cef8deef75dd4240cf057`):
+
+| Métrica / Subsistema | Valor Medido (Baseline G-1) | Evidência Literal (`log.txt` / `freeze.txt`) |
+| :--- | :--- | :--- |
+| **Frame-Time / FPS (Frames 1301400..1301700)** | **50.4 FPS médio** · **32.8 FPS (1% low)** · `avg 19.85 ms`, `p99 30.48 ms`, `max 74.87 ms` | `nvn_perf: frames 1301400..1301700 frame time ms: avg 19.85 min 10.66 median 18.98 p99 30.48 max 74.87 \| fps avg 50.4, 1% low 32.8` |
+| **Tempo de GPU Vulkan (`nvn_vk_perf`)** | **4.18 ms/frame total** (`batch replay 3.69 ms`, `wait for GPU 0.09 ms`, `present 0.40 ms`) | `nvn_vk_perf: batch replay 3.69 ms (dispatch 0.02, draw preparation 2.27, pipelines 0.02, shader modules 0.00), wait for the GPU 0.09 ms, copy-back 0.01 ms, present 0.40 ms` |
+| **Holds de Pipeline / Stalls de Compilação (`T_joycon_base` / in-game)** | **379 holds acumulados = 15.899,2 ms (~15,9 s de travamento)** · maior hold individual: **483,2 ms** · `pipelines not made ahead so far: 284` | `pipelines not made ahead so far: 284 \| holds so far: 379, 15899.2 ms, longest 483.2 ms` |
+| **Congelamento Agudo (`freeze.txt`)** | **5,1 s congelado** no frame `1299195` (`WorldResourceLoader` em `nvnTexturePoolRegisterTexture` / `Presentation Thread` em `nvnQueuePresentTexture`) | `=== freeze: frame 1299195 unbeaten for 5.1 s ===` (`freeze.txt`) |
+| **Áudio (`smo_audio`)** | **144 amostras descartadas (`queue full`)** a cada 2 s · fila em `112 ms` · `slowest frame of sound 5.1 ms` | `smo_audio: last 2 s: 0 gaps (the device found the queue empty), 144 samples dropped (queue full), queue now 112 ms, slowest frame of sound 5.1 ms, 0 frames late` |
+| **Degradação de Resolução (`smo_quality` + DRS)** | Cai de `1440x810` para **`1248x702`** (`smo_quality`) e **`800x450`** (DRS interno do jogo) por falsos positivos de CPU stall | `smo_quality: frame avg 20.1 ms, worst 47.0 ms -> step down to 1248 (cooldown 64 s)` / `nvn_vk_tex: pool=0x132c96708 id=73 create 800x450 fmt=37 (the game's cap gives 800x450; our target is 1440x810)` |
+| **Pipeline Cache em Disco** | **8.984 KB** (`vk_pipeline.cache`) | `nvn_vk: pipeline cache saved: 8984 KB` |
 
 ---
 
