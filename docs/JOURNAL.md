@@ -205,4 +205,5 @@
 - T-09: Expandido o buffer do AAudio de 2x para 4x burst (mínimo 1920 frames) em `runtime/android/android_main.c`, ajustados limiares do anel de áudio em `runtime/smo_audio.c` (`RING_TARGET = 7680`, `RING_START = 3840`) e quadruplicada a fila de amostras do decodificador de vídeo (`QMAX = 1024`) em `runtime/android/android_movie.c` para prevenir descompasso áudio/vídeo em cutscenes e underruns de som.
 - T-05: Desacoplado `skip_active()` de `fight_recent()` em `runtime/nvn_vk_m4.c` tornando o pulo assíncrono de shaders faltantes ativo em todas as cenas 3D no Android, e definido `o->shader_skip = 1` como padrão do Android em `runtime/gfx_options.c`.
 - T-06: Limitada a contagem de threads de compilação em segundo plano (`g_pw_nthread`) para no máximo 3 no Android em `runtime/nvn_vk_m4.c`, mitigando a contenção de mutexes e starvation dos núcleos de CPU Kryo.
+- T-07: Implementadas instruções nativas de hardware AArch64 (`frecpe` e `frsqrte`) via inline assembly em `runtime/fpexact.h` para aceleração direta de recíproca e raiz quadrada recíproca de ponto flutuante.
 - Atualizado `CHANGELOG.md` na seção `[Unreleased]`.
