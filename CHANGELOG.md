@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Disabled automatic generate_release_notes in GitHub Actions workflow to enforce CHANGELOG-based release notes.
 - Eliminated 30-second main thread stalls in `nvnProgramSetShaders` and synchronized `GameActivity`'s "Preparing graphics..." loading overlay with worker shader completion.
+- Expanded AAudio buffer capacity to >= 1920 frames (4x burst), adjusted audio ring buffer thresholds, and quadrupled cutscene movie sample queue (`QMAX = 1024`) to eliminate audio stuttering and audio/video desync.
 
 ## [0.2.0] - 2026-11-07
 
