@@ -193,3 +193,8 @@
 - Triagem factual de tela preta:
   - Suspensas todas as suposições e alterações de código até a obtenção dos logs físicos de execução via ADB.
   - Preparado guia contextualizado de captura via terminal Linux no Poco F7.
+
+## 2026-11-08 — Sessão 12: Execução do Plano de Correções — T-00
+### Eventos e Ações:
+- T-00: Criada tag de segurança `backup/pre-plan-2026-11-08` e desativado `generate_release_notes` no workflow `android.yml`.
+- Atualizado `CHANGELOG.md` na seção `[Unreleased]`.

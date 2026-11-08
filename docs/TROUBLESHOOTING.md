@@ -50,3 +50,6 @@ Ambiente Alvo: Xiaomi Poco F7 (Snapdragon 8s Gen 4 / Adreno 825 / HyperOS 4 / An
 * **Sintoma Observado pelo Usuário:** O aplicativo abre, as barras de navegação/status do sistema permanecem visíveis, e a tela fica completamente preta/escura sem iniciar o jogo. O mesmo jogo abre normalmente no app de referência funcional.
 * **Status da Investigação:** Reaberta. Nenhuma causa-raiz será afirmada sem evidência factual.
 * **Ação Imediata:** Aguardar o envio do log completo do logcat gerado pelo operador via ADB no computador Linux conectado ao Xiaomi Poco F7.
+
+### Lição da Sessão 11: Comportamento da Splash Screen dos Joy-Cons
+- **Correção do Operador:** A tela de abertura "Try playing with detached Joy-Con controllers" em *Super Mario Odyssey* não é uma tela de emparelhamento interativa que aguarda pressionamento de 'A' ou 'L+R'. Ela avança autonomamente após expirar um timer interno do jogo e após o término da compilação inicial de pipelines em segundo plano. Nunca afirmar que pressionar botões avança essa tela.
