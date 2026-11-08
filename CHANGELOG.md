@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Disabled automatic generate_release_notes in GitHub Actions workflow to enforce CHANGELOG-based release notes.
+
 ## [0.2.0] - 2026-11-07
 
 ### Added
