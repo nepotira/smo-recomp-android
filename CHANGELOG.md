@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Dynamic Native Fullscreen Resolution toggle with Hor+ 3D camera projection expansion (`al::getSceneFrameBufferMainAspect` / `al::Projection::setAspect`) in `LauncherActivity`, `smo_quality.c` and `nvn_vk_draw.c`, eliminating side letterboxing and stretching on modern phone displays (e.g. Poco F7 20:9).
 - Native CMake integration for `libmain.so` compiled directly from `runtime/` and bridged dynamically to `libsmo.so` via ARM64 trampolines and dlsym resolution.
 - Hardware ARM64 `frecpe` and `frsqrte` inline assembly instructions in `runtime/fpexact.h` replacing scalar fallback loops.
 

@@ -59,6 +59,36 @@ static void res_hold(uint64_t out, uint64_t in) {
     wr32(out, held_w); wr32(out + 4, (uint32_t)((uint64_t)held_w * ih / iw));
 }
 
+float nvn_vk_display_aspect(int *out_w, int *out_h);
+
+/* al::getSceneFrameBufferMainAspect(const al::Scene*) [0x40009cf324] -> returns float aspect in S0 */
+void __wrap_f_40009cf324(Ctx *c) {
+    c->fn = 0x40009cf324ULL;
+    float aspect = 16.0f / 9.0f;
+    if (gfx_options()->native_fullscreen) {
+        int dw = 0, dh = 0;
+        aspect = nvn_vk_display_aspect(&dw, &dh);
+    }
+    vzero(&c->v[0]);
+    c->v[0].f[0] = aspect;
+}
+
+/* al::Projection::setAspect(float) [0x40009c06f8] -> updates projection aspect at +0xb0 and +0x1e0 */
+void __wrap_f_40009c06f8(Ctx *c) {
+    c->fn = 0x40009c06f8ULL;
+    uint64_t proj = c->x[0];
+    float a = c->v[0].f[0];
+    if (gfx_options()->native_fullscreen && a > 1.70f && a < 1.85f) {
+        a = nvn_vk_display_aspect(NULL, NULL);
+        c->v[0].f[0] = a;
+    }
+    uint32_t bits = c->v[0].w[0];
+    c->x[8] = 1;
+    wr32(proj + 0xb0, bits);
+    wr32(proj + 0x1e0, bits);
+    wr8(proj + 0x8, 1);
+}
+
 void __wrap_f_4000a58394(Ctx *c) {
     uint64_t out = c->x[1], in = c->x[2], view = c->x[3];
     if (g_full < 0) {

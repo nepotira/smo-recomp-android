@@ -16,4 +16,4 @@
 
 # Hook into al::getSceneFrameBufferMainAspect return register S0
 # Replaces FDIV S0, S0, S1 with MOVI / LDR float constant (2.2229508f)
-0x0045e41c 0x1e211800 0x1e271000  # al::getSceneFrameBufferMainAspect: replace 16:9 FDIV with 20:9 native aspect ratio
+0x009cf324 0x1e211800 0x1e271000  # al::getSceneFrameBufferMainAspect (0x40009cf324): replace 16:9 FDIV with native aspect ratio

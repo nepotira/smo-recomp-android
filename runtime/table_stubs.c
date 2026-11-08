@@ -60,6 +60,8 @@ void __real_f_4000a58394(Ctx *c) { if (g_real_a58394) g_real_a58394(c); }
 void __wrap_f_400072e61c(Ctx *c);
 void __wrap_f_4000731fdc(Ctx *c);
 void __wrap_f_4000a58394(Ctx *c);
+void __wrap_f_40009cf324(Ctx *c);
+void __wrap_f_40009c06f8(Ctx *c);
 
 int smo_patch_arm64_jump(void *src, void *dst) {
     if (!src || !dst || src == dst) return 0;
@@ -132,6 +134,8 @@ __attribute__((constructor)) static void smo_bridge_init(void) {
         {"__wrap_f_400072e61c", (void *)__wrap_f_400072e61c},
         {"__wrap_f_4000731fdc", (void *)__wrap_f_4000731fdc},
         {"__wrap_f_4000a58394", (void *)__wrap_f_4000a58394},
+        {"f_40009cf324", (void *)__wrap_f_40009cf324},
+        {"f_40009c06f8", (void *)__wrap_f_40009c06f8},
     };
     int patched = 0;
     for (unsigned i = 0; i < sizeof(hooks) / sizeof(hooks[0]); i++) {

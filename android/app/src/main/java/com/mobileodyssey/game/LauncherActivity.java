@@ -259,8 +259,19 @@ public class LauncherActivity extends Activity {
         /* everything that decides the picture's size, together: the mode the game is told, then the scale of what it draws */
         boolean hh = "handheld".equalsIgnoreCase(g.get("console_mode", "docked"));
         int bw = hh ? 1280 : 1600, bh = hh ? 720 : 900;
+        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+        int natW = Math.max(dm.widthPixels, dm.heightPixels), natH = Math.min(dm.widthPixels, dm.heightPixels);
+        if (android.os.Build.VERSION.SDK_INT >= 30) {
+            android.graphics.Rect bnd = getWindowManager().getMaximumWindowMetrics().getBounds();
+            natW = Math.max(bnd.width(), bnd.height());
+            natH = Math.min(bnd.width(), bnd.height());
+        }
+        float natRatio = natH > 0 ? (float) natW / (float) natH : (16f / 9f);
+        String ratioLabel = String.format(java.util.Locale.US, "%dx%d (%.2f:9)", natW, natH, natRatio * 9f);
         LinearLayout r = card();
         r.addView(header("Resolution"));
+        r.addView(toggle(g, "native_fullscreen", "Native fullscreen (" + ratioLabel + ")", "on", "off", "on",
+                "Detected display: " + ratioLabel + ". Expands the 3D camera field of view (Hor+) to your phone's exact aspect ratio and fills 100% of the screen without black bars or stretching."));
         r.addView(choice(g, "console_mode", "Console mode", new String[]{"docked", "handheld"}, new String[]{"Docked", "Handheld"}, "docked",
                 "What the game is told it runs as; it picks its own picture size for each: docked " + "1600x900, handheld 1280x720."));
         r.addView(choice(g, "resolution_scale", "Resolution", new String[]{"auto", "1.50", "2.00"},
