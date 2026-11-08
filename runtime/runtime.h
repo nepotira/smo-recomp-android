@@ -31,10 +31,21 @@ void call_indirect(Ctx *c, uint64_t addr);
 void host_import(Ctx *c, int sym);          /* call to a symbol another module provides */
 typedef struct { uint64_t addr; void (*fn)(Ctx *); } FnEntry;
 typedef struct { const char *name; uint64_t value; int defined; } DynSym;
+#ifdef SMO_BRIDGE_ENABLED
+extern const FnEntry (*game_fn_table_p)[];
+extern const int *game_fn_table_count_p;
+extern const DynSym (*game_dyn_syms_p)[];
+extern const int *game_dyn_sym_count_p;
+#define fn_table (*game_fn_table_p)
+#define fn_table_count (*game_fn_table_count_p)
+#define dyn_syms (*game_dyn_syms_p)
+#define dyn_sym_count (*game_dyn_sym_count_p)
+#else
 extern const FnEntry fn_table[];
 extern const int fn_table_count;
 extern const DynSym dyn_syms[];
 extern const int dyn_sym_count;
+#endif
 void guest_trap(const char *what, uint64_t addr);
 void guest_unimpl(uint64_t pc, uint32_t insn, const char *what);
 void guest_svc(Ctx *c, uint32_t number);

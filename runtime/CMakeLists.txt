@@ -15,10 +15,7 @@ add_compile_options(
     -D_GNU_SOURCE
     -DSMO_LAYOUT=android
     -D__ANDROID__
-    -Dfn_table=(*game_fn_table_p)
-    -Dfn_table_count=(*game_fn_table_count_p)
-    -Ddyn_syms=(*game_dyn_syms_p)
-    -Ddyn_sym_count=(*game_dyn_sym_count_p)
+    -DSMO_BRIDGE_ENABLED
     -ffunction-sections
     -fdata-sections
 )
